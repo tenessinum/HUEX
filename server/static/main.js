@@ -16,6 +16,7 @@ function update() {
     let list = document.getElementById("drones-list");
     if (data !== null) {
         curr_telemetry = data;
+        drawDrones();
         while (list.childElementCount / 2 > data.length) {
             removeLabel((list.childElementCount / 2 - 1).toString());
         }
@@ -34,11 +35,12 @@ function render_drone(el, id) {
     if (el.status === "landed") {
         document.getElementById(id + "img").src = "/static/svg/drone.svg";
     } else {
-        document.getElementById(id + "img").src = "/static/svg/flying-drone.svg";
+        document.getElementById(id + "img").src = "/static/svg/flying_drone.svg";
     }
+    document.getElementById(id + "color").style.backgroundColor = el.led;
 }
 
-async function updateCycle() {
+function updateCycle() {
     setTimeout(function () {
         update();
         updateCycle();
@@ -46,7 +48,7 @@ async function updateCycle() {
 }
 
 function addLabel(id) {
-    document.getElementById("drones-list").innerHTML += "<div id='" + id + "' class='drone-el'><img id='" + id + "img' class='drone-img' alt='' src=''/></div><hr id='" + id + "hr' />"
+    document.getElementById("drones-list").innerHTML += "<div id='" + id + "' class='drone-el'><img id='" + id + "img' class='drone-img' alt='' src=''/><div id='" + id + "color' class='colorel'></div></div><hr id='" + id + "hr' />"
 }
 
 function removeLabel(id) {
@@ -55,6 +57,3 @@ function removeLabel(id) {
     let element2 = document.getElementById(id + "hr");
     element2.parentNode.removeChild(element2);
 }
-
-update();
-updateCycle();
