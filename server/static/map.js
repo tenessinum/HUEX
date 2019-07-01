@@ -11,6 +11,7 @@ function resizeCanvas() {
     canvas.renderAll();
 }
 
+
 function loadField() {
     let request = new XMLHttpRequest();
     request.open('GET', '/static/map.txt', false);
@@ -23,10 +24,10 @@ function loadField() {
         for (let i = 0; i < arr.length; i++) {
             let str = arr[i].split(" ");
             let id = parseInt(str[0]);
-            let size = parseFloat(str[1]) * 1000;
+            let size = parseFloat(str[1]) * 1000 / 6;
             let shiftX = parseFloat(str[2]) * 1000;
             let shiftY = parseFloat(str[3]) * 1000;
-            let angle = parseFloat(str[5]);
+            let angle = parseFloat(str[5]) / Math.PI * 180;
 
             try {
                 var marker = generateArucoMarker(4, 4, "4x4_1000", id);
@@ -34,13 +35,18 @@ function loadField() {
                 marker.set({
                     angle: angle,
                     id: id,
-                    side: size,
-                    width: size,
-                    height: size,
+                    scaleX: size,
+                    scaleY: size,
                     left: shiftX,
-                    top: shiftY,
+                    top: -shiftY,
                     marker: true
                 });
+
+                let a = marker.aCoords;
+                let center = {x: (a.bl.x + a.tr.x) / 2, y: (a.bl.y + a.tr.y) / 2};
+
+                marker.set('top', marker.top - (a.tl.y + center.y) * 1000 / 18);
+                marker.set('left',marker.left + (a.tl.x - center.x) * 1000 / 18);
 
                 markers.push(marker);
             } catch (e) {
@@ -48,8 +54,11 @@ function loadField() {
             }
         }
 
-        var group = new fabric.Group(markers);
+        var group = new fabric.Group(markers, {
+            selectable: false
+        });
         canvas.add(group);
+        canvas.renderAll();
     }
 }
 
@@ -158,6 +167,7 @@ canvas.on('mouse:wheel', function (opt) {
     canvas.zoomToPoint({x: opt.e.offsetX, y: opt.e.offsetY}, zoom);
     opt.e.preventDefault();
     opt.e.stopPropagation();
+    canvas.renderAll();
 });
 
 
@@ -173,8 +183,8 @@ function drawDrones() {
     }
     for (let i = 0; i < curr_telemetry.length; i++) {
         canvas._objects[i + 1].fill = curr_telemetry[i].led;
-        canvas._objects[i + 1].left = curr_telemetry[i].pose.x;
-        canvas._objects[i + 1].top = curr_telemetry[i].pose.y;
+        canvas._objects[i + 1].left = curr_telemetry[i].pose.x * 0;
+        canvas._objects[i + 1].top = -curr_telemetry[i].pose.y * 0;
     }
     canvas.renderAll();
 }
