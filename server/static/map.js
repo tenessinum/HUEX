@@ -174,7 +174,7 @@ canvas.on('mouse:wheel', function (opt) {
 function drawDrones() {
     while (canvas._objects.length - 1 < curr_telemetry.length) {
         let circ = new fabric.Circle({
-            radius: 20, fill: 'green', left: 100, top: 100
+            radius: 100, fill: 'green', left: 100, top: 100
         });
         canvas.add(circ);
     }
@@ -182,9 +182,12 @@ function drawDrones() {
         canvas._objects.pop();
     }
     for (let i = 0; i < curr_telemetry.length; i++) {
-        canvas._objects[i + 1].fill = curr_telemetry[i].led;
-        canvas._objects[i + 1].left = curr_telemetry[i].pose.x * 0;
-        canvas._objects[i + 1].top = -curr_telemetry[i].pose.y * 0;
+        canvas._objects[i + 1].set('fill', curr_telemetry[i].led);
+
+        canvas._objects[i + 1].animate('left', curr_telemetry[i].pose.x);
+        canvas._objects[i + 1].animate('top', -curr_telemetry[i].pose.y, { onChange: canvas.renderAll.bind(canvas) });
+        /*canvas._objects[i + 1].left = curr_telemetry[i].pose.x;
+        canvas._objects[i + 1].top = -curr_telemetry[i].pose.y - 100;*/
     }
     canvas.renderAll();
 }

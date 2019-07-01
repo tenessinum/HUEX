@@ -33,9 +33,9 @@ def random_drone():
         "led": '#%02X%02X%02X' % (r(), r(), r()),
         "status": ["landed", "flight"][random.randint(0, 1)],
         "pose": {
-            "x": random.randint(40, 400), "y": random.randint(40, 400), "z": random.randint(40, 400)
+            "x": random.randint(40, 2500), "y": random.randint(40, 2500), "z": random.randint(40, 2500)
         },
         "next": {
-            "x": random.randint(40, 400), "y": random.randint(40, 400), "z": random.randint(40, 400)
+            "x": random.randint(40, 2500), "y": random.randint(40, 2500), "z": random.randint(40, 2500)
         },
     }

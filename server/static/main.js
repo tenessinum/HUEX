@@ -1,4 +1,5 @@
 var curr_telemetry;
+var freq = 1;
 
 function get_telemetry() {
     let request = new XMLHttpRequest();
@@ -44,7 +45,7 @@ function updateCycle() {
     setTimeout(function () {
         update();
         updateCycle();
-    }, 2000);
+    }, 1000 / freq);
 }
 
 function addLabel(id) {
