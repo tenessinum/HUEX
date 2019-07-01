@@ -11,14 +11,117 @@ function resizeCanvas() {
     canvas.renderAll();
 }
 
-fabric.Image.fromURL('/static/sample_aruco.png', function (oImg) {
-    canvas.add(oImg);
-    oImg.moveTo(0);
-}, {
-    selectable: false
-});
+function loadField() {
+    let request = new XMLHttpRequest();
+    request.open('GET', '/static/map.txt', false);
+    request.send();
+    if (request.status === 200) {
+        let arr = request.responseText.split("\n");
+
+        var markers = [];
+
+        for (let i = 0; i < arr.length; i++) {
+            let str = arr[i].split(" ");
+            let id = parseInt(str[0]);
+            let size = parseFloat(str[1]) * 1000;
+            let shiftX = parseFloat(str[2]) * 1000;
+            let shiftY = parseFloat(str[3]) * 1000;
+            let angle = parseFloat(str[5]);
+
+            try {
+                var marker = generateArucoMarker(4, 4, "4x4_1000", id);
+
+                marker.set({
+                    angle: angle,
+                    id: id,
+                    side: size,
+                    width: size,
+                    height: size,
+                    left: shiftX,
+                    top: shiftY,
+                    marker: true
+                });
+
+                markers.push(marker);
+            } catch (e) {
+
+            }
+        }
+
+        var group = new fabric.Group(markers);
+        canvas.add(group);
+    }
+}
+
+function generateMarkerObject(width, height, bits) {
+    var marker = [];
+
+    // Background rect
+    var backRect = new fabric.Rect({
+        left: 0,
+        top: 0,
+        originX: 'left',
+        originY: 'top',
+        width: width + 2,
+        height: height + 2,
+        fill: 'black'
+    });
+    marker.push(backRect);
+
+    // "Pixels"
+    for (var i = 0; i < height; i++) {
+        for (var j = 0; j < width; j++) {
+            var color = bits[i * height + j] ? 'white' : 'black';
+            var pixel = new fabric.Rect({
+                left: j + 1,
+                top: i + 1,
+                originX: 'left',
+                originY: 'top',
+                width: 1,
+                height: 1,
+                fill: color,
+                hasBorders: false
+            });
+            marker.push(pixel);
+        }
+    }
+    // generate group object
+    var group = new fabric.Group(marker, {
+        width: width + 2,
+        height: height + 2,
+        originX: 'left',
+        originY: 'top',
+        transparentCorners: false,
+        lockScalingFlip: true
+    }).setCoords().setControlsVisibility({
+        'ml': false,
+        'mt': false,
+        'mr': false,
+        'mb': false
+    });
+
+    return group;
+}
+
+function generateArucoMarker(width, height, dictName, id) {
+    var bytes = dict[dictName][id];
+    var bits = [];
+    var bitsCount = width * height;
+
+    // Parse marker's bytes
+    for (var byte of bytes) {
+        var start = bitsCount - bits.length;
+        for (var i = Math.min(7, start - 1); i >= 0; i--) {
+            bits.push((byte >> i) & 1);
+        }
+    }
+
+    return generateMarkerObject(width, height, bits);
+}
+
 
 resizeCanvas();
+loadField();
 canvas.renderAll();
 
 canvas.on('mouse:down', function (opt) {

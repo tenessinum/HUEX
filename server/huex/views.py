@@ -8,6 +8,10 @@ def main(request):
     return render(request, "main.html", data)
 
 
+def post_telemetry(request):
+    return JsonResponse({"m": "ok"})
+
+
 def get_info(request):
     data = dict()
 
