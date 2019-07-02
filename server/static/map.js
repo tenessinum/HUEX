@@ -140,6 +140,19 @@ canvas.on('mouse:down', function (opt) {
         this.selection = false;
         this.lastPosX = evt.clientX;
         this.lastPosY = evt.clientY;
+    } else if (choosing === true) {
+        var land_point = opt.absolutePointer;
+        console.log(land_point);
+        let request = new XMLHttpRequest();
+        let send_data = {
+            id: choose_id,
+            command: choose_type,
+            x: land_point.x / 1000,
+            y: -land_point.y / 1000,
+        };
+        request.open('GET', '/send?' + Object.entries(send_data).map(e => e.join('=')).join('&'), true);
+        request.send(null);
+        choosing = false;
     }
 });
 canvas.on('mouse:move', function (opt) {
@@ -159,7 +172,6 @@ canvas.on('mouse:up', function (opt) {
 
 canvas.on('mouse:wheel', function (opt) {
     var delta = opt.e.deltaY;
-    var pointer = canvas.getPointer(opt.e);
     var zoom = canvas.getZoom();
     zoom = zoom + delta / 200;
     if (zoom > 20) zoom = 20;
@@ -188,11 +200,11 @@ function drawDrones() {
     }
     for (let i = 0; i < curr_telemetry.length; i++) {
         canvas._objects[i + 1].set('fill', curr_telemetry[i].led);
-        canvas._objects[i + 1].animate('left', curr_telemetry[i].pose.x, {
+        canvas._objects[i + 1].animate('left', curr_telemetry[i].pose.x * 1000, {
             duration: 1000 / freq,
             easing: fabric.util.ease.easeInSine
         });
-        canvas._objects[i + 1].animate('top', -curr_telemetry[i].pose.y - 100, {
+        canvas._objects[i + 1].animate('top', -curr_telemetry[i].pose.y * 1000 - 100, {
             onChange: canvas.renderAll.bind(canvas),
             duration: 1000 / freq,
             easing: fabric.util.ease.easeInSine
