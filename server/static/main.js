@@ -41,7 +41,8 @@ function render_drone(el, id) {
         document.getElementById(id + "img").src = "/static/svg/flying_drone.svg";
     }
     document.getElementById(id + "color").style.backgroundColor = el.led;
-    document.getElementById(id + "pos").innerHTML = JSON.stringify(el.pose);
+    document.getElementById(id + "pos").innerHTML = "<div></div>";
+    JSON.stringify(el.pose);
 }
 
 function updateCycle() {
