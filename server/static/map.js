@@ -12,6 +12,13 @@ function resizeCanvas() {
 }
 
 
+canvas.setZoom(canvas.getZoom() / 10);
+
+canvas.viewportTransform[4] += canvas.width * 2;
+canvas.viewportTransform[5] += canvas.height * 3;
+
+canvas.renderAll();
+
 function loadField() {
     let request = new XMLHttpRequest();
     request.open('GET', '/static/map.txt', false);
@@ -200,7 +207,7 @@ function drawDrones() {
     }
     for (let i = 0; i < curr_telemetry.length; i++) {
         canvas._objects[i + 1].set('fill', curr_telemetry[i].led);
-        canvas._objects[i + 1].animate('left', curr_telemetry[i].pose.x * 1000, {
+        canvas._objects[i + 1].animate('left', curr_telemetry[i].pose.x * 1000 - 100, {
             duration: 1000 / freq,
             easing: fabric.util.ease.easeInSine
         });

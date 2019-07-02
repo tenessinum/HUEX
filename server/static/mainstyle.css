@@ -4,12 +4,13 @@ html {
     font-family: "Roboto", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", Verdana, Arial, sans-serif;
 }
 
-body, html, .holder, .container, .left-field, .right-field, .elcontento, .full {
+body, html, .holder, .container, .elcontento, .full {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
 }
+
 
 .navbar {
     width: 100%;
@@ -37,7 +38,8 @@ body, html, .holder, .container, .left-field, .right-field, .elcontento, .full {
 }
 
 .right-field {
-    width: 750px;
+    min-width: 750px;
+    max-width: 750px;
     margin: 30px 30px 30px 15px;
     display: flex;
     flex-direction: column;
@@ -74,12 +76,6 @@ body, html, .holder, .container, .left-field, .right-field, .elcontento, .full {
 @media screen and (max-width: 900px) {
     .holder {
         flex-direction: column;
-    }
-
-    .left-field, .right-field {
-        width: 100%;
-        height: auto;
-        margin: 15px;
     }
 }
 

@@ -51,5 +51,4 @@ class Clever:
                 }
             }
         else:
-            print(self.commands[len(self.commands) - 1])
             return self.commands[len(self.commands) - 1]

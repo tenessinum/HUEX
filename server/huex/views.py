@@ -8,6 +8,7 @@ copters = [Clever('0.0.0.0'), Clever('0.0.0.1'), Clever('0.0.0.2')]
 for i in copters:
     i.random()
 
+
 def main(request):
     data = dict()
     return render(request, "main.html", data)
@@ -16,10 +17,10 @@ def main(request):
 @csrf_exempt
 def post_telemetry(request):
     r = lambda: random.randint(0, 255)
-    print(get_client_ip(request))
 
     if not get_client_ip(request) in [i.ip for i in copters]:
         copters.append(Clever(get_client_ip(request)))
+        print("Added copter with ip", get_client_ip(request))
 
     '''new_telem = {
         "command": "land",  # "navigate", "land", "take_off"
@@ -32,7 +33,7 @@ def post_telemetry(request):
 
     for i in copters:
         if i.ip == get_client_ip(request):
-            return i.toNewData()
+            return i.toNewTelem()
 
 
 def get_info(request):
@@ -64,7 +65,6 @@ def random_drone():
 
 def send_command(request):
     data = request.GET.dict()
-    print(data)
 
     copters[int(data["id"])].addCommand(data)
 
