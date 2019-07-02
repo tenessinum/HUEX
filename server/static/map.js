@@ -46,7 +46,7 @@ function loadField() {
                 let center = {x: (a.bl.x + a.tr.x) / 2, y: (a.bl.y + a.tr.y) / 2};
 
                 marker.set('top', marker.top - (a.tl.y + center.y) * 1000 / 18);
-                marker.set('left',marker.left + (a.tl.x - center.x) * 1000 / 18);
+                marker.set('left', marker.left + (a.tl.x - center.x) * 1000 / 18);
 
                 markers.push(marker);
             } catch (e) {
@@ -172,20 +172,31 @@ canvas.on('mouse:wheel', function (opt) {
 
 
 function drawDrones() {
-    while (canvas._objects.length - 1 < curr_telemetry.length) {
+    var thr = 1;
+    if (choosing) {
+        thr = 1;
+    }
+
+    while (canvas._objects.length - thr < curr_telemetry.length) {
         let circ = new fabric.Circle({
-            radius: 100, fill: 'green', left: 100, top: 100
+            radius: 100, fill: 'green', left: 100, top: 100, selectable: false
         });
         canvas.add(circ);
     }
-    while (canvas._objects.length - 1 > curr_telemetry.length) {
+    while (canvas._objects.length - thr > curr_telemetry.length) {
         canvas._objects.pop();
     }
     for (let i = 0; i < curr_telemetry.length; i++) {
         canvas._objects[i + 1].set('fill', curr_telemetry[i].led);
-
-        canvas._objects[i + 1].animate('left', curr_telemetry[i].pose.x);
-        canvas._objects[i + 1].animate('top', -curr_telemetry[i].pose.y, { onChange: canvas.renderAll.bind(canvas) });
+        canvas._objects[i + 1].animate('left', curr_telemetry[i].pose.x, {
+            duration: 1000 / freq,
+            easing: fabric.util.ease.easeInSine
+        });
+        canvas._objects[i + 1].animate('top', -curr_telemetry[i].pose.y - 100, {
+            onChange: canvas.renderAll.bind(canvas),
+            duration: 1000 / freq,
+            easing: fabric.util.ease.easeInSine
+        });
         /*canvas._objects[i + 1].left = curr_telemetry[i].pose.x;
         canvas._objects[i + 1].top = -curr_telemetry[i].pose.y - 100;*/
     }

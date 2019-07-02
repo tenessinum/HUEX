@@ -4,7 +4,7 @@ html {
     font-family: "Roboto", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", Verdana, Arial, sans-serif;
 }
 
-body, html, .holder, .container, .left-field, .right-field {
+body, html, .holder, .container, .left-field, .right-field, .elcontento, .full {
     width: 100%;
     height: 100%;
     margin: 0;
@@ -57,8 +57,9 @@ body, html, .holder, .container, .left-field, .right-field {
 }
 
 .drone-el {
-    width: 500px;
-    height: 200px;
+    width: 100%;
+    min-height: 140px;
+    max-height: 140px;
     background-color: #e5e5e5;
     transition: .3s;
     border-radius: 10px;
@@ -67,8 +68,7 @@ body, html, .holder, .container, .left-field, .right-field {
 }
 
 .drone-el:hover {
-    cursor: pointer;
-    background-color: #c7c7c7;
+    background-color: #e1e1e1;
 }
 
 @media screen and (max-width: 900px) {
@@ -91,4 +91,37 @@ body, html, .holder, .container, .left-field, .right-field {
 
 .c {
     border-radius: 10px;
+}
+
+.elbutto {
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-right: 3px;
+}
+
+.elbut {
+    font-size: 18px;
+    text-align: center;
+    padding: 10px;
+    padding-top: 20%;
+    padding-bottom: 0;
+    vertical-align: middle;
+    border-radius: 10px;
+    width: 60px;
+    height: 100%;
+    color: #f8f8f8;
+    background-color: #bababa;
+    transition: .3s;
+}
+
+.elcontento {
+    display: flex;
+    flex-direction: row;
+}
+
+.elbut:hover {
+    cursor: pointer;
+    background-color: #9e9e9e;
 }

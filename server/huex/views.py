@@ -9,7 +9,15 @@ def main(request):
 
 
 def post_telemetry(request):
-    return JsonResponse({"m": "ok"})
+    r = lambda: random.randint(0, 255)
+
+    new_telem = {
+        "led": '#%02X%02X%02X' % (r(), r(), r()),
+        "x": 10,
+        "y": 20,
+        "z": 30
+    }
+    return JsonResponse(new_telem)
 
 
 def get_info(request):
@@ -39,3 +47,7 @@ def random_drone():
             "x": random.randint(40, 2500), "y": random.randint(40, 2500), "z": random.randint(40, 2500)
         },
     }
+
+
+def send_command(request):
+    return JsonResponse({"m": "ok"})
