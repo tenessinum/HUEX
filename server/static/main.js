@@ -37,14 +37,18 @@ function update() {
 }
 
 function render_drone(el, id) {
-    if (el.status === "landed") {
+    if (el.status === "land") {
         document.getElementById(id + "img").src = "/static/svg/drone.svg";
     } else {
         document.getElementById(id + "img").src = "/static/svg/flying_drone.svg";
     }
     document.getElementById(id + "color").style.backgroundColor = el.led;
-    document.getElementById(id + "pos").innerHTML = "<div></div>";
-    JSON.stringify(el.pose);
+    document.getElementById(id + "x").innerHTML = "x: " + el.pose.x.toString();
+    document.getElementById(id + "y").innerHTML = "y: " + el.pose.y.toString();
+    document.getElementById(id + "z").innerHTML = "z: " + el.pose.z.toString();
+    document.getElementById(id + "nx").innerHTML = "x: " + el.pose.x.toString();
+    document.getElementById(id + "ny").innerHTML = "y: " + el.pose.y.toString();
+    document.getElementById(id + "nz").innerHTML = "z: " + el.pose.z.toString();
 }
 
 function updateCycle() {
@@ -56,7 +60,11 @@ function updateCycle() {
 
 function addLabel(id) {
     document.getElementById("drones-list").innerHTML += "<div id='" + id + "' class='drone-el'><img id='" + id
-        + "img' class='drone-img' alt='' src=''/><div class='elcontento'><div class='full' id='" + id + "pos'></div><div class='elbutto'>" +
+        + "img' class='drone-img' alt='' src=''/><div class='elcontento'><div class='full'><strong>Current Pose</strong>" +
+        "<div><div id='" + id + "x'></div><div id='" + id + "y'></div><div id='" + id + "z'></div></div></div>" +
+        "<div class='full'><strong>Next Pose</strong>" +
+        "<div><div id='" + id + "nx'></div><div id='" + id + "ny'></div><div id='" + id + "nz'></div></div>" +
+        "</div><div class='elbutto'>" +
         "<div onclick='land(" + id + ")' class='elbut' style='margin: 8px 8px 4px 8px;'>" +
         "Land</div><div class='elbut' onclick='flyto(" + id + ")' style='margin: 4px 8px 8px 8px;'>" +
         "Fly to</div></div>" +

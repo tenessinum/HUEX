@@ -38,8 +38,8 @@ body, html, .holder, .container, .elcontento, .full {
 }
 
 .right-field {
-    min-width: 750px;
-    max-width: 750px;
+    min-width: 550px;
+    max-width: 550px;
     margin: 30px 30px 30px 15px;
     display: flex;
     flex-direction: column;
@@ -120,4 +120,15 @@ body, html, .holder, .container, .elcontento, .full {
 .elbut:hover {
     cursor: pointer;
     background-color: #9e9e9e;
+}
+
+.full {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.full strong {
+    margin: 5px;
+    margin-left: 0px;
 }
