@@ -15,7 +15,8 @@ def post_telemetry(request):
         "led": '#%02X%02X%02X' % (r(), r(), r()),
         "x": 10,
         "y": 20,
-        "z": 30
+        "z": 30,
+        "yaw": 3.141592
     }
     return JsonResponse(new_telem)
 
@@ -41,13 +42,14 @@ def random_drone():
         "led": '#%02X%02X%02X' % (r(), r(), r()),
         "status": ["landed", "flight"][random.randint(0, 1)],
         "pose": {
-            "x": random.randint(40, 2500), "y": random.randint(40, 2500), "z": random.randint(40, 2500)
+            "x": random.randint(40, 2500), "y": random.randint(40, 2500), "z": random.randint(40, 2500), "yaw": 3.141592
         },
         "next": {
-            "x": random.randint(40, 2500), "y": random.randint(40, 2500), "z": random.randint(40, 2500)
+            "x": random.randint(40, 2500), "y": random.randint(40, 2500), "z": random.randint(40, 2500), "yaw": 3.141592
         },
     }
 
 
 def send_command(request):
+
     return JsonResponse({"m": "ok"})
