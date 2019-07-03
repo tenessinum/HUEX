@@ -1,5 +1,5 @@
 var curr_telemetry;
-var freq = 0.5;
+var freq = 3;
 var choosing = false;
 var cursor;
 var choose_type;
@@ -53,14 +53,19 @@ function render_drone(el, id) {
 
 function updateCycle() {
     setTimeout(function () {
-        update();
+        try {
+            update();
+        } catch (e) {
+
+        }
         updateCycle();
     }, 1000 / freq);
 }
 
 function addLabel(id) {
-    document.getElementById("drones-list").innerHTML += "<div id='" + id + "' class='drone-el'><img id='" + id
-        + "img' class='drone-img' alt='' src=''/><div class='elcontento'><div class='full'><strong>Current Pose</strong>" +
+    document.getElementById("drones-list").innerHTML += "<div id='" + id + "' class='drone-el'><div><img id='" + id
+        + "img' class='drone-img' alt='' src=''/><div class='elbut delet' onclick='delet(" + id + ")'>" +
+        "Delete</div></div><div class='elcontento'><div class='full'><strong>Current Pose</strong>" +
         "<div><div id='" + id + "x'></div><div id='" + id + "y'></div><div id='" + id + "z'></div></div></div>" +
         "<div class='full'><strong>Next Pose</strong>" +
         "<div><div id='" + id + "nx'></div><div id='" + id + "ny'></div><div id='" + id + "nz'></div></div>" +
@@ -85,6 +90,19 @@ function flyto(id) {
     choose_type = "fly";
 }
 
+function delet(id) {
+    Ply.dialog(
+        "confirm",
+        "Delete Clever from this list?"
+    ).done(function (ui) {
+        let request = new XMLHttpRequest();
+        request.open('GET', '/delete?id=' + id, false);
+        request.send();
+    })
+        .fail(function (ui) {
+        });
+
+}
 
 function removeLabel(id) {
     let element = document.getElementById(id);
