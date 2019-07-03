@@ -12,7 +12,7 @@ index=0
 
 while read line; do
 	array[$index]="$line"
-	index=$(($index+1))
+	index=$(($index+1));
 done < /home/pi/networkData.txt
 
 ssid=${array[0]}
