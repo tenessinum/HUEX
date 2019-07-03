@@ -3,7 +3,7 @@ import random
 
 class Clever:
     def __init__(self, ip):
-        r = lambda: random.randint(150, 255)
+        r = lambda: random.randint(0, 255)
         self.led = '#%02X%02X%02X' % (r(), r(), r())
         self.status = "land"
         self.x = 0
@@ -43,12 +43,14 @@ class Clever:
 
     def toTelem(self):
         return {
+            "ip": self.ip,
             "led": self.led,
             "status": self.status,
             "pose": {
                 "x": self.x, "y": self.y, "z": self.z,
                 "yaw": self.yaw
-            }
+            },
+            "nextp": self.toNewTelem()
         }
 
     def toNewTelem(self):
@@ -63,3 +65,4 @@ class Clever:
             }
         else:
             return self.commands[len(self.commands) - 1]
+       
