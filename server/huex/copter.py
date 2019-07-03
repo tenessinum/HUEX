@@ -3,7 +3,8 @@ import random
 
 class Clever:
     def __init__(self, ip):
-        self.led = "#FFFF00"
+        r = lambda: random.randint(150, 255)
+        self.led = '#%02X%02X%02X' % (r(), r(), r())
         self.status = "land"
         self.x = 0
         self.y = 0
