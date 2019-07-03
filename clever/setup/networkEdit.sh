@@ -6,7 +6,10 @@ fi
 
 sudo iw dev wlan0 scan | grep SSID
 
-readarray array < /home/pi/networkData.txt
+sed -i -e 's/\r$//' networkData.txt
+sed -i -e 's/^M$//' networkData.txt
+
+readarray array < networkData.txt
 
 index=0
 
@@ -49,10 +52,12 @@ network={
 
 EOF
 
-sudo systemctl restart dhcpcd
+
 ;;
 n|N) echo "Successful setup!!!"
 ;;
 *) exit 0 
 ;;
 esac
+
+sudo systemctl restart dhcpcd
