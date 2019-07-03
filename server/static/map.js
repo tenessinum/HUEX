@@ -156,6 +156,7 @@ canvas.on('mouse:down', function (opt) {
             command: choose_type,
             x: land_point.x / 1000,
             y: -land_point.y / 1000,
+            z: 1.5
         };
         request.open('GET', '/send?' + Object.entries(send_data).map(e => e.join('=')).join('&'), true);
         request.send(null);

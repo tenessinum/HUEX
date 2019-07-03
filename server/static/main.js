@@ -43,12 +43,12 @@ function render_drone(el, id) {
         document.getElementById(id + "img").src = "/static/svg/flying_drone.svg";
     }
     document.getElementById(id + "color").style.backgroundColor = el.led;
-    document.getElementById(id + "x").innerHTML = "x: " + el.pose.x.toString();
-    document.getElementById(id + "y").innerHTML = "y: " + el.pose.y.toString();
-    document.getElementById(id + "z").innerHTML = "z: " + el.pose.z.toString();
-    document.getElementById(id + "nx").innerHTML = "x: " + el.pose.x.toString();
-    document.getElementById(id + "ny").innerHTML = "y: " + el.pose.y.toString();
-    document.getElementById(id + "nz").innerHTML = "z: " + el.pose.z.toString();
+    document.getElementById(id + "x").innerHTML = "x: " + (Math.round(el.pose.x * 100) / 100).toString();
+    document.getElementById(id + "y").innerHTML = "y: " + (Math.round(el.pose.y * 100) / 100).toString();
+    document.getElementById(id + "z").innerHTML = "z: " + (Math.round(el.pose.z * 100) / 100).toString();
+    document.getElementById(id + "nx").innerHTML = "x: " + (Math.round(el.pose.x * 100) / 100).toString();
+    document.getElementById(id + "ny").innerHTML = "y: " + (Math.round(el.pose.y * 100) / 100).toString();
+    document.getElementById(id + "nz").innerHTML = "z: " + (Math.round(el.pose.z * 100) / 100).toString();
 }
 
 function updateCycle() {
