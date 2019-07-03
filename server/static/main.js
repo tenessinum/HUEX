@@ -1,5 +1,5 @@
 var curr_telemetry;
-var freq = 3;
+var freq = 4;
 var choosing = false;
 var cursor;
 var choose_type;
@@ -83,6 +83,11 @@ function land(id) {
     choose_id = parseInt(id);
     choosing = true;
     choose_type = "land";
+    canvas.backgroundColor = "#bdbdbd";
+    for (let i = 0; i < canvas._objects.length; i++) {
+        canvas._objects[i].set('opacity', 0.8);
+    }
+    canvas.renderAll();
 }
 
 function force_land() {
@@ -104,6 +109,11 @@ function flyto(id) {
     choose_id = parseInt(id);
     choosing = true;
     choose_type = "fly";
+    canvas.backgroundColor = "#bdbdbd";
+    for (let i = 0; i < canvas._objects.length; i++) {
+        canvas._objects[i].set('opacity', 0.8);
+    }
+    canvas.renderAll();
 }
 
 function delet(id) {
