@@ -161,6 +161,11 @@ canvas.on('mouse:down', function (opt) {
         request.open('GET', '/send?' + Object.entries(send_data).map(e => e.join('=')).join('&'), true);
         request.send(null);
         choosing = false;
+        canvas.backgroundColor = "#ffffff";
+        for (let i = 0; i < canvas._objects.length; i++) {
+            canvas._objects[i].set('opacity', 1);
+        }
+        canvas.renderAll();
     }
 });
 canvas.on('mouse:move', function (opt) {
