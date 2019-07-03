@@ -4,9 +4,13 @@ from django.http import JsonResponse
 from huex.copter import Clever
 import random
 
+'''
 copters = [Clever('0.0.0.0'), Clever('0.0.0.1'), Clever('0.0.0.2')]
 for i in copters:
     i.random()
+'''
+
+copters = []
 
 
 def main(request):
@@ -20,7 +24,6 @@ def post_telemetry(request):
 
     if not get_client_ip(request) in [i.ip for i in copters]:
         copters.append(Clever(get_client_ip(request)))
-        print("Added copter with ip", get_client_ip(request))
 
     '''new_telem = {
         "command": "land",  # "navigate", "land", "take_off"
@@ -33,7 +36,11 @@ def post_telemetry(request):
 
     for i in copters:
         if i.ip == get_client_ip(request):
-            return i.toNewTelem()
+            i.x = float(request.POST.get("x"))
+            i.y = float(request.POST.get("y"))
+            i.z = float(request.POST.get("z"))
+            i.yaw = float(request.POST.get("yaw"))
+            return JsonResponse(i.toNewTelem())
 
 
 def get_info(request):
@@ -43,8 +50,7 @@ def get_info(request):
     data["drones"] = []
 
     for i in range(0, len(copters)):
-        # copters[i].random()
-        data["drones"].append(copters[i].toNewTelem())
+        data["drones"].append(copters[i].toTelem())
 
     return JsonResponse(data)
 

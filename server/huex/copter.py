@@ -3,8 +3,8 @@ import random
 
 class Clever:
     def __init__(self, ip):
-        self.led = ""
-        self.status = "landed"
+        self.led = "#FFFF00"
+        self.status = "land"
         self.x = 0
         self.y = 0
         self.z = 0
@@ -35,10 +35,20 @@ class Clever:
             "led": self.led,
             "status": command['command'],
             "pose": {
-                "x": float(command['x']), "y": float(command['y']), "z": self.z,
+                "x": float(command['x']), "y": float(command['y']), "z": float(command['z']),
                 "yaw": self.yaw
             }
         })
+
+    def toTelem(self):
+        return {
+            "led": self.led,
+            "status": self.status,
+            "pose": {
+                "x": self.x, "y": self.y, "z": self.z,
+                "yaw": self.yaw
+            }
+        }
 
     def toNewTelem(self):
         if len(self.commands) == 0:
