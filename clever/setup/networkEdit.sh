@@ -6,10 +6,10 @@ fi
 
 sudo iw dev wlan0 scan | grep SSID
 
-sed -i -e 's/\r$//' /home/pi/networkData.txt
-sed -i -e 's/^M$//' /home/pi/networkData.txt
+sed -i -e 's/\r$//' networkData.txt
+sed -i -e 's/^M$//' networkData.txt
 
-readarray array < /home/pi/networkData.txt
+readarray array < networkData.txt
 
 index=0
 
