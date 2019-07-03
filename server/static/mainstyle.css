@@ -132,3 +132,10 @@ body, html, .holder, .container, .elcontento, .full {
     margin: 5px;
     margin-left: 0px;
 }
+
+.delet {
+    height: 26px;
+    padding: 5px;
+    border-radius: 0 10px 0 10px;
+    background-color: #f22234;
+}

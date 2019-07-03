@@ -10,12 +10,17 @@ for i in copters:
     i.random()
 '''
 
-copters = []
+copters = [Clever('0.0.0.13')]
 
 
 def main(request):
     data = dict()
     return render(request, "main.html", data)
+
+
+def delete(request):
+    copters.pop(int(request.GET.dict()["id"]))
+    return JsonResponse({})
 
 
 @csrf_exempt
@@ -26,7 +31,7 @@ def post_telemetry(request):
         copters.append(Clever(get_client_ip(request)))
 
     '''new_telem = {
-        "command": "land",  # "navigate", "land", "take_off"
+        "command": "land", # "navigate", "land", "take_off"
         "led": '#%02X%02X%02X' % (r(), r(), r()),
         "x": 0,
         "y": 0,
