@@ -136,3 +136,12 @@ function removeLabel(id) {
     let element2 = document.getElementById(id + "hr");
     element2.parentNode.removeChild(element2);
 }
+
+function refreshh() {
+    for (let i = 0; i < curr_telemetry.length; i++) {
+        let request = new XMLHttpRequest();
+        request.open('GET', '/delete?id=0', false);
+        request.send();
+    }
+
+}

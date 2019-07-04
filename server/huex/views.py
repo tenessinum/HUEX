@@ -10,7 +10,7 @@ for i in copters:
     i.random()
 '''
 
-copters = [Clever('0.0.0.0')]
+copters = []
 
 
 def main(request):
@@ -25,26 +25,17 @@ def delete(request):
 
 @csrf_exempt
 def post_telemetry(request):
-    r = lambda: random.randint(0, 255)
+    ip = get_client_ip(request)
 
     if not get_client_ip(request) in [i.ip for i in copters]:
-        copters.append(Clever(get_client_ip(request)))
-
-    '''new_telem = {
-        "command": "land", # "navigate", "land", "take_off"
-        "led": '#%02X%02X%02X' % (r(), r(), r()),
-        "x": 0,
-        "y": 0,
-        "z": 2,
-        "yaw": 0
-    }'''
+        copters.append(Clever(ip))
 
     for i in copters:
-        if i.ip == get_client_ip(request):
-            i.x = float(request.POST.get("x"))
-            i.y = float(request.POST.get("y"))
-            i.z = float(request.POST.get("z"))
-            i.yaw = float(request.POST.get("yaw"))
+        if i.ip == ip:
+            i.x = float(request.GET.get("x"))
+            i.y = float(request.GET.get("y"))
+            i.z = float(request.GET.get("z"))
+            i.yaw = float(request.GET.get("yaw"))
             return JsonResponse(i.toNewTelem())
 
 
