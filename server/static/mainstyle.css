@@ -32,6 +32,7 @@ body, html, .holder, .container, .elcontento, .full {
 }
 
 .img-group img {
+    margin-left: 10px;
     cursor: pointer;
     height: 60px;
 }

@@ -10,7 +10,7 @@ for i in copters:
     i.random()
 '''
 
-copters = [Clever('0.0.0.0')]
+copters = [Clever('0.0.0.0'), Clever('0.0.0.1'), Clever('0.0.0.2')]
 
 
 def main(request):
