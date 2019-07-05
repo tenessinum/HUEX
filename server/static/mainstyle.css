@@ -53,6 +53,48 @@ body, html, .holder, .container, .elcontento, .full {
 
 }
 
+.road-settings {
+    min-width: 580px;
+    max-width: 580px;
+    margin: 0 15px 30px 15px;
+    display: flex;
+    flex-direction: row;
+    min-height: 200px;
+    max-height: 200px;
+    border-radius: 20px;
+    background-color: #f9f9f9;
+}
+
+.road-settings-bgroup {
+    width: calc(50% - 40px);
+    height: calc(100% - 40px);
+    margin: 20px;
+    border-radius: 10px;
+    background-color: #bdbdbd;
+    transition: .3s;
+}
+
+.road-settings-bgroup div {
+    width: 100%;
+    height: calc(50% - 25px);
+    color: #3b3b3b;
+    font-size: 20px;
+    background-color: #bdbdbd;
+    border-radius: 10px;
+    transition: .3s;
+    text-align: center;
+    padding-top: 25px;
+}
+
+.road-settings-bgroup:hover {
+    background-color: #949494;
+}
+
+.road-settings-bgroup div:hover {
+    background-color: #949494;
+    cursor: pointer;
+}
+
 .right-field {
     min-width: 550px;
     max-width: 550px;
@@ -67,6 +109,10 @@ body, html, .holder, .container, .elcontento, .full {
     border-radius: 20px;
     background-color: #f9f9f9;
     padding: 15px
+}
+
+.right-field {
+    height: 100%;
 }
 
 .drone-img {

@@ -8,5 +8,6 @@ urlpatterns = [
     path('post', views.post_telemetry),  # For telemerty post
     path('get', views.get_info),  # For telemetry recive
     path('send', views.send_command),  # For sending commands from web
-    path('delete', views.delete)  # For deleting drones
+    path('delete', views.delete),  # For deleting drones
+    path('set', views.set_field)  # For changing map
 ]
