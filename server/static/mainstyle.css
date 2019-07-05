@@ -65,35 +65,45 @@ body, html, .holder, .container, .elcontento, .full {
     background-color: #f9f9f9;
 }
 
+.levo {
+    margin: 0px 10px 20px 20px;
+}
+
+.pravo {
+    margin: 0px 20px 20px 10px;
+}
+
+.levo div:hover {
+    background-color: #55942f;
+}
+
+.pravo div:hover {
+    color: #e4e4e4;
+    background-color: #94322e;
+}
+
 .road-settings-bgroup {
-    width: calc(50% - 40px);
+    width: calc(50% - 30px);
     height: calc(100% - 40px);
-    margin: 20px;
     border-radius: 10px;
-    background-color: #bdbdbd;
     transition: .3s;
 }
 
 .road-settings-bgroup div {
+    cursor: pointer;
     width: 100%;
-    height: calc(50% - 25px);
+    height: calc(50% - 30px);
     color: #3b3b3b;
     font-size: 20px;
     background-color: #bdbdbd;
     border-radius: 10px;
     transition: .3s;
     text-align: center;
-    padding-top: 25px;
+    padding-top: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
-.road-settings-bgroup:hover {
-    background-color: #949494;
-}
-
-.road-settings-bgroup div:hover {
-    background-color: #949494;
-    cursor: pointer;
-}
 
 .right-field {
     min-width: 550px;

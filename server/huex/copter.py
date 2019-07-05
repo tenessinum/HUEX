@@ -1,5 +1,11 @@
 import random
 
+threshold = 0.2  # meters
+
+
+def get_distance(x1, y1, z1, x2, y2, z2):
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2) ** 0.5
+
 
 class Clever:
     def __init__(self, ip):
@@ -63,6 +69,11 @@ class Clever:
                     "yaw": self.yaw
                 }
             }
+        elif len(self.commands) == 1:
+            return self.commands[0]
         else:
-            return self.commands[len(self.commands) - 1]
-       
+            nav_point = self.commands[0]
+            dist = get_distance(nav_point.x, nav_point.y, nav_point.z, self.x, self.y, self.z)
+            if dist < threshold:
+                self.commands.pop(0)
+            return self.commands[0]
