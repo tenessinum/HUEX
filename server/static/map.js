@@ -253,7 +253,7 @@ canvas.on('mouse:down', function (opt) {
             chosen = 0
         }
     }
-    canvas.backgroundColor = "#ffffff";
+    canvas.backgroundColor = "#f9f9f9";
     for (let i = 0; i < canvas._objects.length; i++) {
         canvas._objects[i].set('opacity', 1);
     }
