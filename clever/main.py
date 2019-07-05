@@ -140,6 +140,9 @@ while True:
             else:
                 take_off()
                 flight_now = True
+        if result['status'] == 'force_land':
+            land()
+            quit()
     except r.exceptions.ConnectionError:
         print('Server fallen down, sleep 2 secs.')
     except KeyboardInterrupt:
