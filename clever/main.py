@@ -14,7 +14,7 @@ def get_distance(x1, y1, z1, x2, y2, z2):
 
 SPEED = 0.8
 
-PARAMS_NAME = ('x', 'y', 'z', 'yaw', 'mode')
+PARAMS_NAME = ('x', 'y', 'z', 'yaw', 'mode', 'cell_voltage')
 
 rospy.init_node('flight')
 get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
