@@ -28,6 +28,7 @@ telemetry = False
 flight_now = False
 last_pose = False
 fly_thread = Thread()
+interrupt = False
 
 
 def send_telemetry(frame_id='aruco_map'):
@@ -42,7 +43,7 @@ def send_telemetry(frame_id='aruco_map'):
             par = round(par, 3)
         params[p] = par
     # print(params)
-    v = r.get('http://192.168.1.206:8000/post', params)
+    v = r.get('http://192.168.1.168:8000/post', params)
     # print('sent')
     # print(v.text)
     return v.json()
@@ -57,24 +58,42 @@ def take_off(z=1.5, speed=SPEED):
     # rospy.sleep(1)
 
 
-def navigate_wait(x, y, z, speed, yaw=float('nan'), frame_id='aruco_map', tolerance=0.2):
-    global telemetry
+def navigate_wait(x, y, z, speed, yaw=float('nan'), frame_id='aruco_map', tolerance=0.2, timeout=10):
+    global telemetry, interrupt
     navigate(x=x, y=y, z=z, speed=speed, yaw=yaw, frame_id=frame_id)
     print('start')
-    while True:
+    while not interrupt:
         telem = telemetry
         # print(telem)
         if get_distance(x, y, z, telem.x, telem.y, telem.z) < tolerance:
+            set_position(x=x, y=y, z=z, yaw=yaw, frame_id=frame_id)
             break
+    else:
+        interrupt = False
+        print('interrupted')
+        set_position(x=telemetry.x, y=telemetry.y, z=telemetry.z, yaw=float('nan'), frame_id=frame_id)
     print('ready')
-    # print('sp start')
-    set_position(x=x, y=y, z=z, yaw=yaw, frame_id=frame_id)
-    # rospy.sleep(10)
-    # print('slept')
-    # print('sp stop')
 
 
-def fly(request):
+def land_to(x, y, z, speed, yaw=float('nan'), frame_id='aruco_map', tolerance=0.2):
+    global telemetry, interrupt
+    navigate(x=x, y=y, z=z, speed=speed, yaw=yaw, frame_id=frame_id)
+    print('start')
+    while not interrupt:
+        telem = telemetry
+        # print(telem)
+        if get_distance(x, y, z, telem.x, telem.y, telem.z) < tolerance:
+            land()
+            # set_position(x=x, y=y, z=z, yaw=yaw, frame_id=frame_id)
+            break
+    else:
+        interrupt = False
+        print('interrupted')
+        set_position(x=telemetry.x, y=telemetry.y, z=telemetry.z, yaw=float('nan'), frame_id=frame_id)
+    print('ready')
+
+
+def fly(request, tgt=navigate_wait):
     global fly_thread, flight_now, last_pose
     if not fly_thread.is_alive():
         for n in request['pose']:
@@ -87,7 +106,7 @@ def fly(request):
                 request['pose']['z'] = get_telemetry(frame_id='aruco_map').z
 
             print('Navigating to', request['pose'])
-            fly_thread = Thread(target=navigate_wait,
+            fly_thread = Thread(target=tgt,
                                 kwargs={'x': request['pose']['x'], 'y': request['pose']['y'],
                                         'z': request['pose']['z'], 'speed': 0.3, 'yaw': float('nan'),
                                         'frame_id': 'aruco_map'})
@@ -109,7 +128,11 @@ while True:
             flight_now = True
         if result['status'] == 'land' and flight_now:
             print('Landing')
-            res = land()
+            # if fly_thread.is_alive():
+            #     interrupt = True
+            if fly_thread.is_alive():
+                interrupt = True
+            fly(result, tgt=land_to)
             flight_now = False
         if result['status'] == 'fly':
             if flight_now:
