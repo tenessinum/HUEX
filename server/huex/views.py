@@ -68,7 +68,7 @@ def random_drone():
 
 def send_command(request):
     data = request.GET.dict()
-    if data['status'] == 'force_land':
+    if data['command'] == 'force_land':
         copters[int(data["id"])].commands = []
 
     copters[int(data["id"])].addCommand(data)
