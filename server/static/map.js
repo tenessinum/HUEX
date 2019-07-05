@@ -19,14 +19,17 @@ canvas.viewportTransform[5] += canvas.height * 3;
 
 canvas.renderAll();
 
+var chosen = 0;
+var choses = [];
+
 function loadField() {
     let request = new XMLHttpRequest();
     request.open('GET', '/static/map.txt', false);
     request.send();
+    var markers = [];
+
     if (request.status === 200) {
         let arr = request.responseText.split("\n");
-
-        var markers = [];
 
         for (let i = 0; i < arr.length; i++) {
             let str = arr[i].split(" ");
@@ -61,11 +64,42 @@ function loadField() {
             }
         }
 
+    }
+    let req = new XMLHttpRequest();
+    req.open('GET', '/static/roads.json', false);
+    req.send();
+    if (req.status === 200) {
+        var canvas_data = JSON.parse(req.responseText);
+        roads = canvas_data;
+        for (let i = 0; i < canvas_data.lines.length; i++) {
+            let coords = [canvas_data.points[canvas_data.lines[i]["1"]].x * 1000, -canvas_data.points[canvas_data.lines[i]["1"]].y * 1000, canvas_data.points[canvas_data.lines[i]["2"]].x * 1000, -canvas_data.points[canvas_data.lines[i]["2"]].y * 1000];
+            let line = new fabric.Line(coords, {
+                fill: 'red',
+                stroke: 'red',
+                strokeWidth: 15,
+            });
+            markers.push(line);
+        }
+        for (let i = 0; i < canvas_data.points.length; i++) {
+            let line = new fabric.Circle({
+                radius: 100,
+                fill: 'red',
+                left: canvas_data.points[i].x * 1000 - 100,
+                top: -canvas_data.points[i].y * 1000 - 100,
+                selectable: false
+            });
+            markers.push(line);
+        }
+    }
+
+    try {
         var group = new fabric.Group(markers, {
             selectable: false
         });
-        canvas.add(group);
+        canvas._objects.unshift(group);
         canvas.renderAll();
+    } catch (e) {
+
     }
 }
 
@@ -149,7 +183,6 @@ canvas.on('mouse:down', function (opt) {
         this.lastPosY = evt.clientY;
     } else if (choosing === true) {
         var land_point = opt.absolutePointer;
-        console.log(land_point);
         let request = new XMLHttpRequest();
         let send_data = {
             id: choose_id,
@@ -161,13 +194,72 @@ canvas.on('mouse:down', function (opt) {
         request.open('GET', '/send?' + Object.entries(send_data).map(e => e.join('=')).join('&'), true);
         request.send(null);
         choosing = false;
-        canvas.backgroundColor = "#ffffff";
-        for (let i = 0; i < canvas._objects.length; i++) {
-            canvas._objects[i].set('opacity', 1);
+    } else if (adding_point === true) {
+        let request = new XMLHttpRequest();
+        request.open('GET', '/set?m=add&c=point&x=' + (opt.absolutePointer.x / 1000).toString() + '&y=' + (-opt.absolutePointer.y / 1000).toString(), true);
+        request.send(null);
+        adding_point = false;
+        canvas._objects.shift();
+        loadField();
+    } else if (adding_line === true) {
+        if (chosen === 0) {
+            var point1 = get_point(opt.absolutePointer.x, -opt.absolutePointer.y);
+            if (point1 !== -1) {
+                choses.push(point1);
+                chosen += 1;
+                return
+            }
+        } else if (chosen === 1) {
+            var point2 = get_point(opt.absolutePointer.x, -opt.absolutePointer.y);
+            if (point2 !== -1) {
+                choses.push(point2);
+                let request = new XMLHttpRequest();
+                request.open('GET', '/set?m=add&c=line&o=' + choses[0].toString() + '&t=' + choses[1].toString(), true);
+                request.send(null);
+                adding_line = false;
+                canvas._objects.shift();
+                loadField();
+            }
+            choses = [];
+            chosen = 0
         }
-        canvas.renderAll();
+    } else if (remove_point === true) {
+        let request = new XMLHttpRequest();
+        request.open('GET', '/set?m=remove&c=point&n=' + get_point(opt.absolutePointer.x, -opt.absolutePointer.y).toString(), true);
+        request.send(null);
+        remove_point = false;
+        canvas._objects.shift();
+        loadField();
+    } else if (remove_line === true) {
+        if (chosen === 0) {
+            var point1 = get_point(opt.absolutePointer.x, -opt.absolutePointer.y);
+            if (point1 !== -1) {
+                choses.push(point1);
+                chosen += 1;
+                return
+            }
+        } else if (chosen === 1) {
+            var point2 = get_point(opt.absolutePointer.x, -opt.absolutePointer.y);
+            if (point2 !== -1) {
+                choses.push(point2);
+                let request = new XMLHttpRequest();
+                request.open('GET', '/set?m=remove&c=line&o=' + choses[0].toString() + '&t=' + choses[1].toString(), true);
+                request.send(null);
+                remove_line = false;
+                canvas._objects.shift();
+                loadField();
+            }
+            choses = [];
+            chosen = 0
+        }
     }
+    canvas.backgroundColor = "#ffffff";
+    for (let i = 0; i < canvas._objects.length; i++) {
+        canvas._objects[i].set('opacity', 1);
+    }
+    canvas.renderAll();
 });
+
 canvas.on('mouse:move', function (opt) {
     if (this.isDragging) {
         var e = opt.e;
@@ -178,6 +270,7 @@ canvas.on('mouse:move', function (opt) {
         this.lastPosY = e.clientY;
     }
 });
+
 canvas.on('mouse:up', function (opt) {
     this.isDragging = false;
     this.selection = true;
@@ -226,4 +319,17 @@ function drawDrones() {
         canvas._objects[i + 1].top = -curr_telemetry[i].pose.y - 100;*/
     }
     canvas.renderAll();
+}
+
+function get_point(x, y) {
+    for (var i = 0; i < roads.points.length; i++) {
+        //console.log([x, roads.points[i].x, y, roads.points[i].y]);
+        let lena = Math.sqrt(Math.pow(x - roads.points[i].x * 1000, 2) + Math.pow(y - roads.points[i].y * 1000, 2));
+        //console.log(lena);
+        if (lena <= 100) {
+            return i
+        }
+    }
+
+    return -1
 }

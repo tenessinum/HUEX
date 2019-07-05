@@ -4,6 +4,11 @@ var choosing = false;
 var cursor;
 var choose_type;
 var choose_id;
+var adding_point = false;
+var adding_line = false;
+var remove_point = false;
+var remove_line = false;
+var roads;
 
 function get_telemetry() {
     let request = new XMLHttpRequest();
@@ -82,6 +87,10 @@ function addLabel(id) {
 function land(id) {
     choose_id = parseInt(id);
     choosing = true;
+    adding_point = false;
+    adding_line = false;
+    remove_point = false;
+    remove_line = false;
     choose_type = "land";
     canvas.backgroundColor = "#bdbdbd";
     for (let i = 0; i < canvas._objects.length; i++) {
@@ -108,6 +117,10 @@ function force_land() {
 function flyto(id) {
     choose_id = parseInt(id);
     choosing = true;
+    adding_point = false;
+    adding_line = false;
+    remove_point = false;
+    remove_line = false;
     choose_type = "fly";
     canvas.backgroundColor = "#bdbdbd";
     for (let i = 0; i < canvas._objects.length; i++) {
