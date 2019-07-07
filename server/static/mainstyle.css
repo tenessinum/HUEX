@@ -216,8 +216,6 @@ body, html, .holder, .container, .elcontento, .full {
     display: flex;
     margin-top: 8px;
     margin-left: -2px;
-    font-size: x-large;
-    font-family: Arial;
 }
 
 .ip {

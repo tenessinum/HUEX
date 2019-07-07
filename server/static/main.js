@@ -56,9 +56,9 @@ function render_drone(el, id) {
     if ((Math.round(el.voltage * 100)/100) <= low_voltage ) {
         document.getElementById(id + "voltage").style.color = "#f22234";
     } else {
-        document.getElementById(id + "voltage").style.color = "#5b9f1f"
+        document.getElementById(id + "voltage").style.color = "#55942f"
     }
-    document.getElementById(id + "voltage").innerHTML = (Math.round(el.voltage * 100)/100).toString() + " V";
+    document.getElementById(id + "voltage").innerHTML = "<strong>" + (Math.round(el.voltage * 100)/100).toString() + " V</strong>";
     document.getElementById(id + "nx").innerHTML = "x: " + (Math.round(el.nextp.pose.x * 100) / 100).toString();
     document.getElementById(id + "ny").innerHTML = "y: " + (Math.round(el.nextp.pose.y * 100) / 100).toString();
     document.getElementById(id + "nz").innerHTML = "z: " + (Math.round(el.nextp.pose.z * 100) / 100).toString();
