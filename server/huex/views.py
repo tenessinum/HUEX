@@ -11,7 +11,7 @@ for i in copters:
     i.random()
 '''
 
-copters = []
+copters = [Clever('0.0.0.0')]
 
 
 def main(request):
@@ -37,6 +37,7 @@ def post_telemetry(request):
             i.y = float(request.GET.get("y"))
             i.z = float(request.GET.get("z"))
             i.yaw = float(request.GET.get("yaw"))
+            i.voltage = float(request.GET.gat("cell_voltage"))
             return JsonResponse(i.toNewTelem())
 
 
@@ -68,8 +69,6 @@ def random_drone():
 
 def send_command(request):
     data = request.GET.dict()
-    if data['command'] == 'force_land':
-        copters[int(data["id"])].commands = []
 
     copters[int(data["id"])].addCommand(data)
 

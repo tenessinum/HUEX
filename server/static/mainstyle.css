@@ -212,6 +212,14 @@ body, html, .holder, .container, .elcontento, .full {
     background-color: #f22234;
 }
 
+.voltage {
+    display: flex;
+    margin-top: 8px;
+    margin-left: -2px;
+    font-size: x-large;
+    font-family: Arial;
+}
+
 .ip {
     position: relative;
     left: -4px;
