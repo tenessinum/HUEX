@@ -211,7 +211,7 @@ canvas.on('mouse:down', function (opt) {
                     let request = new XMLHttpRequest();
                     let send_data = {
                         id: choose_id,
-                        command: 'buiild_path',
+                        command: 'build_path',
                         o: choses[0],
                         t: choses[1]
                     };
