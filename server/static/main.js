@@ -53,7 +53,7 @@ function render_drone(el, id) {
     document.getElementById(id + "x").innerHTML = "x: " + (Math.round(el.pose.x * 100) / 100).toString();
     document.getElementById(id + "y").innerHTML = "y: " + (Math.round(el.pose.y * 100) / 100).toString();
     document.getElementById(id + "z").innerHTML = "z: " + (Math.round(el.pose.z * 100) / 100).toString();
-    if ((Math.round(el.voltage * 100)/100) <= low_voltage ) {
+    if ((Math.round(el.voltage * 100)/100) <= low_voltage) {
         document.getElementById(id + "voltage").style.color = "#f22234";
     } else {
         document.getElementById(id + "voltage").style.color = "#5b9f1f"
