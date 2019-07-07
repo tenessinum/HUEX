@@ -11,7 +11,7 @@ for i in copters:
     i.random()
 '''
 
-copters = [Clever('0.0.0.0')]
+copters = []
 
 
 def main(request):
@@ -38,7 +38,7 @@ def post_telemetry(request):
             i.z = float(request.GET.get("z"))
             i.yaw = float(request.GET.get("yaw"))
             try:
-                i.voltage = float(request.GET.gat("cell_voltage"))
+                i.voltage = float(request.GET.get("cell_voltage"))
             except:
                 i.voltage = 0
             return JsonResponse(i.toNewTelem())
@@ -129,4 +129,10 @@ def set_field(request):
     with open('static/roads.json', 'w') as f:
         dump(file_data, f)
 
+    return JsonResponse({})
+
+
+def set_color(request):
+    data = request.GET.dict()
+    copters[int(data['id'])].led = '#' + data['color']
     return JsonResponse({})
