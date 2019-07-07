@@ -7,13 +7,16 @@ from threading import Thread
 import requests as r
 import math
 from mapDown import map_down
+import consts
+import LedLib as led
+
 
 def get_distance(x1, y1, z1, x2, y2, z2):
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 
-SPEED = 0.3
-land_voltage = 3.8
+SPEED = 0.8
+land_voltage = 3.5
 
 PARAMS_NAME = ('x', 'y', 'z', 'yaw', 'mode', 'cell_voltage')
 
@@ -30,6 +33,7 @@ flight_now = False
 last_pose = False
 fly_thread = Thread()
 interrupt = False
+connected = False
 
 
 def send_telemetry(frame_id='aruco_map'):
@@ -44,7 +48,8 @@ def send_telemetry(frame_id='aruco_map'):
             par = round(par, 3)
         params[p] = par
     # print(params)
-    v = r.get('http://192.168.1.206:8000/post', params)
+    v = r.get(consts.SERVER_IP + '/post', params)
+    # print(v.text)
     # print('sent')
     # print(v.text)
     return v.json()
@@ -120,20 +125,32 @@ def fly(request, tgt=navigate_wait):
     else:
         print('alive')
 
-def forceLand(ans = ""):
+
+def forceLand(ans=""):
+    global interrupt
+    if fly_thread.is_alive():
+        interrupt = True
     print("Force land. " + ans)
     land()
     quit()
 
+
+t = Thread(target=led.led_thread)
+t.daemon = True
+t.start()
+
 map_down()
 while True:
     try:
-
         result = send_telemetry()
-
+        if not connected:
+            led.mode = 'off'
+            connected = True
         if result['status'] == 'take_off' and not flight_now:
+            # led.mode = "blink"
             take_off()
             flight_now = True
+            # led.mode = "off"
         if result['status'] == 'land' and flight_now:
             print('Landing')
             # if fly_thread.is_alive():
@@ -143,7 +160,7 @@ while True:
             fly(result, tgt=land_to)
             flight_now = False
         if result['status'] == 'fly':
-            if result['voltage'] <= land_voltage:
+            if telemetry.cell_voltage <= land_voltage:
                 forceLand("Low voltage")
             else:
                 if flight_now:
@@ -154,6 +171,13 @@ while True:
         if result['status'] == 'force_land':
             forceLand()
     except r.exceptions.ConnectionError:
+        connected = False
+        led.r = 255
+        led.g = 0
+        led.b = 0
+        led.wait_ms = 50
+        led.mode = "blink"
+
         print('Server fallen down, sleep 2 secs.')
     except KeyboardInterrupt:
         break
