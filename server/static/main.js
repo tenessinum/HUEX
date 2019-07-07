@@ -9,6 +9,7 @@ var adding_line = false;
 var remove_point = false;
 var remove_line = false;
 var roads;
+let low_voltage = 3.8;
 
 function get_telemetry() {
     let request = new XMLHttpRequest();
@@ -52,6 +53,12 @@ function render_drone(el, id) {
     document.getElementById(id + "x").innerHTML = "x: " + (Math.round(el.pose.x * 100) / 100).toString();
     document.getElementById(id + "y").innerHTML = "y: " + (Math.round(el.pose.y * 100) / 100).toString();
     document.getElementById(id + "z").innerHTML = "z: " + (Math.round(el.pose.z * 100) / 100).toString();
+    if ((Math.round(el.voltage * 100)/100) <= low_voltage ) {
+        document.getElementById(id + "voltage").style.color = "#f22234";
+    } else {
+        document.getElementById(id + "voltage").style.color = "#5b9f1f"
+    }
+    document.getElementById(id + "voltage").innerHTML = (Math.round(el.voltage * 100)/100).toString() + " V";
     document.getElementById(id + "nx").innerHTML = "x: " + (Math.round(el.nextp.pose.x * 100) / 100).toString();
     document.getElementById(id + "ny").innerHTML = "y: " + (Math.round(el.nextp.pose.y * 100) / 100).toString();
     document.getElementById(id + "nz").innerHTML = "z: " + (Math.round(el.nextp.pose.z * 100) / 100).toString();
@@ -74,7 +81,8 @@ function addLabel(id) {
         "Delete</div></div><div class='elcontento'><div class='full'><strong>Current Pose</strong>" +
         "<div><div id='" + id + "x'></div><div id='" + id + "y'></div><div id='" + id + "z'></div><div class='ip' id='" + id + "ip'></div></div></div>" +
         "<div class='full'><strong>Next Pose</strong>" +
-        "<div><div id='" + id + "nx'></div><div id='" + id + "ny'></div><div id='" + id + "nz'></div></div>" +
+        "<div><div id='" + id + "nx'></div><div id='" + id + "ny'></div><div id='" + id + "nz'></div>" +
+        "<div class ='voltage' id = '" + id + "voltage'></div></div>" +
         "</div><div class='elbutto'>" +
         "<div onclick='land(" + id + ")' class='elbut' style='margin: 8px 8px 4px 8px;'>" +
         "Land</div><div class='elbut' onclick='flyto(" + id + ")' style='margin: 4px 8px 8px 8px;'>" +
@@ -104,7 +112,7 @@ function force_land() {
         let request = new XMLHttpRequest();
         let send_data = {
             id: i,
-            command: 'force_land',
+            command: 'land',
             x: curr_telemetry[i].pose.x,
             y: curr_telemetry[i].pose.y,
             z: 1.5
