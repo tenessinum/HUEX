@@ -9,5 +9,6 @@ urlpatterns = [
     path('get', views.get_info),  # For telemetry recive
     path('send', views.send_command),  # For sending commands from web
     path('delete', views.delete),  # For deleting drones
-    path('set', views.set_field)  # For changing map
+    path('set', views.set_field),  # For changing map
+    path('set_color', views.set_color)  # For changing map
 ]

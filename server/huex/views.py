@@ -130,3 +130,9 @@ def set_field(request):
         dump(file_data, f)
 
     return JsonResponse({})
+
+
+def set_color(request):
+    data = request.GET.dict()
+    copters[int(data['id'])].led = '#' + data['color']
+    return JsonResponse({})

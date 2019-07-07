@@ -48,17 +48,17 @@ function render_drone(el, id) {
     } else {
         document.getElementById(id + "img").src = "/static/svg/flying_drone.svg";
     }
-    document.getElementById(id + "color").style.backgroundColor = el.led;
+    document.getElementById(id + "colorpicker").style.backgroundColor = el.led;
     document.getElementById(id + "ip").innerHTML = el.ip;
     document.getElementById(id + "x").innerHTML = "x: " + (Math.round(el.pose.x * 100) / 100).toString();
     document.getElementById(id + "y").innerHTML = "y: " + (Math.round(el.pose.y * 100) / 100).toString();
     document.getElementById(id + "z").innerHTML = "z: " + (Math.round(el.pose.z * 100) / 100).toString();
-    if ((Math.round(el.voltage * 100)/100) <= low_voltage ) {
+    if ((Math.round(el.voltage * 100) / 100) <= low_voltage) {
         document.getElementById(id + "voltage").style.color = "#f22234";
     } else {
         document.getElementById(id + "voltage").style.color = "#55942f"
     }
-    document.getElementById(id + "voltage").innerHTML = "<strong>" + (Math.round(el.voltage * 100)/100).toString() + " V</strong>";
+    document.getElementById(id + "voltage").innerHTML = "<strong>" + (Math.round(el.voltage * 100) / 100).toString() + " V</strong>";
     document.getElementById(id + "nx").innerHTML = "x: " + (Math.round(el.nextp.pose.x * 100) / 100).toString();
     document.getElementById(id + "ny").innerHTML = "y: " + (Math.round(el.nextp.pose.y * 100) / 100).toString();
     document.getElementById(id + "nz").innerHTML = "z: " + (Math.round(el.nextp.pose.z * 100) / 100).toString();
@@ -75,7 +75,7 @@ function updateCycle() {
     }, 1000 / freq);
 }
 
-function addLabel(id) {
+function addLabel(id, el) {
     document.getElementById("drones-list").innerHTML += "<div id='" + id + "' class='drone-el'><div><img id='" + id
         + "img' class='drone-img' alt='' src=''/><div class='elbut delet' onclick='delet(" + id + ")'>" +
         "Delete</div></div><div class='elcontento'><div class='full'><strong>Current Pose</strong>" +
@@ -88,8 +88,24 @@ function addLabel(id) {
         "Land</div><div class='elbut' onclick='flyto(" + id + ")' style='margin: 4px 8px 8px 8px;'>" +
         "Fly to</div></div>" +
         "</div>" +
-        "<div id='" + id +
-        "color' class='colorel'></div></div><hr id='" + id + "hr' />"
+        "<div class='colorel' id='" + id + "colorpicker'></div></div><hr id='" + id + "hr' />";
+    /*id='" + id + "color'*/
+    $("#" + id + "colorpicker").spectrum({
+        color: "#f00",
+        preferredFormat: 'rgb'
+    });
+    $("#" + id + "colorpicker").on('hide.spectrum', function (e, tinycolor) {
+        let request = new XMLHttpRequest();
+        request.open('GET', '/set_color?id=' + id + '&color=' + toHex(tinycolor._r) + toHex(tinycolor._g) + toHex(tinycolor._b), false);
+        request.send();
+    });
+}
+
+function toHex(c) {
+    let col = Math.round(c).toString(16);
+    while (col.length < 2)
+        col = '0' + col;
+    return col
 }
 
 function land(id) {
