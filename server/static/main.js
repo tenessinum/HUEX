@@ -128,7 +128,7 @@ function force_land() {
         let request = new XMLHttpRequest();
         let send_data = {
             id: i,
-            command: 'land',
+            command: 'force_land',
             x: curr_telemetry[i].pose.x,
             y: curr_telemetry[i].pose.y,
             z: 1.5

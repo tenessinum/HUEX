@@ -183,17 +183,45 @@ canvas.on('mouse:down', function (opt) {
         this.lastPosY = evt.clientY;
     } else if (choosing === true) {
         var land_point = opt.absolutePointer;
-        let request = new XMLHttpRequest();
-        let send_data = {
-            id: choose_id,
-            command: choose_type,
-            x: land_point.x / 1000,
-            y: -land_point.y / 1000,
-            z: 1.5
-        };
-        request.open('GET', '/send?' + Object.entries(send_data).map(e => e.join('=')).join('&'), true);
-        request.send(null);
-        choosing = false;
+        var point1 = get_point(land_point.x, -land_point.y);
+        if (point1 === -1 && choses.length === 0) {
+            let request = new XMLHttpRequest();
+            let send_data = {
+                id: choose_id,
+                command: choose_type,
+                x: land_point.x / 1000,
+                y: -land_point.y / 1000,
+                z: 1.5
+            };
+            request.open('GET', '/send?' + Object.entries(send_data).map(e => e.join('=')).join('&'), true);
+            request.send(null);
+            choosing = false;
+        } else {
+            if (chosen === 0) {
+                var point1 = get_point(opt.absolutePointer.x, -opt.absolutePointer.y);
+                if (point1 !== -1) {
+                    choses.push(point1);
+                    chosen += 1;
+                    return
+                }
+            } else if (chosen === 1) {
+                var point2 = get_point(opt.absolutePointer.x, -opt.absolutePointer.y);
+                if (point2 !== -1) {
+                    choses.push(point2);
+                    let request = new XMLHttpRequest();
+                    let send_data = {
+                        id: choose_id,
+                        command: 'buiild_path',
+                        o: choses[0],
+                        t: choses[1]
+                    };
+                    request.open('GET', '/send?' + Object.entries(send_data).map(e => e.join('=')).join('&'), true);
+                    request.send(null);
+                }
+                choses = [];
+                chosen = 0
+            }
+        }
     } else if (adding_point === true) {
         let request = new XMLHttpRequest();
         request.open('GET', '/set?m=add&c=point&x=' + (opt.absolutePointer.x / 1000).toString() + '&y=' + (-opt.absolutePointer.y / 1000).toString(), true);
