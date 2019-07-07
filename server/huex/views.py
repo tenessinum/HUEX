@@ -74,26 +74,29 @@ def random_drone():
 def send_command(request):
     data = request.GET.dict()
     if data['command'] == 'buiild_path':
-        path = build_path(int(data['o']), int(data['t']))
-        # print(path)
-        with open('static/roads.json', 'r') as f:
-            file_data = load(f)
-            for i in path:
+        try:
+            path = build_path(int(data['o']), int(data['t']))
+            # print(path)
+            with open('static/roads.json', 'r') as f:
+                file_data = load(f)
+                for i in path:
+                    copters[int(data["id"])].addCommand({
+                        "status": 'fly',
+                        "pose": {
+                            "x": file_data['points'][i]['x'], "y": file_data['points'][i]['y'], "z": 1.5,
+                            "yaw": copters[int(data["id"])].yaw
+                        }
+                    })
                 copters[int(data["id"])].addCommand({
-                    "status": 'fly',
+                    "status": 'land',
                     "pose": {
-                        "x": file_data['points'][i]['x'], "y": file_data['points'][i]['y'], "z": 1.5,
+                        "x": file_data['points'][path(len(path) - 1)]['x'],
+                        "y": file_data['points'][path(len(path) - 1)]['y'], "z": 1.5,
                         "yaw": copters[int(data["id"])].yaw
                     }
                 })
-            copters[int(data["id"])].addCommand({
-                "status": 'land',
-                "pose": {
-                    "x": file_data['points'][path(len(path) - 1)]['x'],
-                    "y": file_data['points'][path(len(path) - 1)]['y'], "z": 1.5,
-                    "yaw": copters[int(data["id"])].yaw
-                }
-            })
+        except:
+            print('There is no available path')
     else:
         copters[int(data["id"])].addCommand(data)
 
