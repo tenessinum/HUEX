@@ -135,6 +135,11 @@ def forceLand(ans=""):
     quit()
 
 
+def toHex(inpData):
+    inpData = inpData.replace("#", '')
+    return [int(inpData[:2], 16), int(inpData[2:4], 16), int(inpData[4:], 16)]
+
+
 t = Thread(target=led.led_thread)
 t.daemon = True
 t.start()
@@ -170,6 +175,13 @@ while True:
                     flight_now = True
         if result['status'] == 'force_land':
             forceLand()
+
+        led.mode = 'fill'
+        colors = toHex(result['led'])
+        led.r = colors[0]
+        led.g = colors[1]
+        led.b = colors[2]
+
     except r.exceptions.ConnectionError:
         connected = False
         led.r = 255
