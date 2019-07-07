@@ -44,7 +44,7 @@ def send_telemetry(frame_id='aruco_map'):
             par = round(par, 3)
         params[p] = par
     # print(params)
-    v = r.get('http://192.168.1.168:8000/post', params)
+    v = r.get('http://192.168.1.206:8000/post', params)
     # print('sent')
     # print(v.text)
     return v.json()
@@ -127,7 +127,9 @@ def forceLand(ans = ""):
 
 while True:
     try:
+
         result = send_telemetry()
+
         if result['status'] == 'take_off' and not flight_now:
             take_off()
             flight_now = True

@@ -70,6 +70,7 @@ function loadField() {
     req.send();
     if (req.status === 200) {
         var canvas_data = JSON.parse(req.responseText);
+        console.log(canvas_data);
         roads = canvas_data;
         for (let i = 0; i < canvas_data.lines.length; i++) {
             let coords = [canvas_data.points[canvas_data.lines[i]["1"]].x * 1000, -canvas_data.points[canvas_data.lines[i]["1"]].y * 1000, canvas_data.points[canvas_data.lines[i]["2"]].x * 1000, -canvas_data.points[canvas_data.lines[i]["2"]].y * 1000];
