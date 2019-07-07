@@ -12,7 +12,8 @@ def get_distance(x1, y1, z1, x2, y2, z2):
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 
-SPEED = 0.8
+SPEED = 0.3
+land_voltage = 3.8
 
 PARAMS_NAME = ('x', 'y', 'z', 'yaw', 'mode', 'cell_voltage')
 
@@ -89,12 +90,12 @@ def land_to(x, y, z, speed, yaw=float('nan'), frame_id='aruco_map', tolerance=0.
     else:
         interrupt = False
         print('interrupted')
-        set_position(x=telemetry.x, y=telemetry.y, z=telemetry.z, yaw=float('nan'), frame_id=frame_id)
+        set_position(x=telemetry.x, y=telemetry.y, z= .z, yaw=float('nan'), frame_id=frame_id)
     print('ready')
 
 
 def fly(request, tgt=navigate_wait):
-    global fly_thread, flight_now, last_pose
+    global fly_thread, flight_now, last_pose, SPEED
     if not fly_thread.is_alive():
         for n in request['pose']:
             request['pose'][n] = round(float(request['pose'][n]), 3)
@@ -108,7 +109,7 @@ def fly(request, tgt=navigate_wait):
             print('Navigating to', request['pose'])
             fly_thread = Thread(target=tgt,
                                 kwargs={'x': request['pose']['x'], 'y': request['pose']['y'],
-                                        'z': request['pose']['z'], 'speed': 0.3, 'yaw': float('nan'),
+                                        'z': request['pose']['z'], 'speed': SPEED, 'yaw': float('nan'),
                                         'frame_id': 'aruco_map'})
             fly_thread.daemon = True
             fly_thread.start()
@@ -119,6 +120,10 @@ def fly(request, tgt=navigate_wait):
     else:
         print('alive')
 
+def forceLand(ans = ""):
+    print("Force land. " + ans)
+    land()
+    quit()
 
 while True:
     try:
@@ -135,14 +140,16 @@ while True:
             fly(result, tgt=land_to)
             flight_now = False
         if result['status'] == 'fly':
-            if flight_now:
-                fly(result)
+            if result['voltage'] <= land_voltage:
+                forceLand("Low voltage")
             else:
-                take_off()
-                flight_now = True
+                if flight_now:
+                    fly(result)
+                else:
+                    take_off()
+                    flight_now = True
         if result['status'] == 'force_land':
-            land()
-            quit()
+            forceLand()
     except r.exceptions.ConnectionError:
         print('Server fallen down, sleep 2 secs.')
     except KeyboardInterrupt:
