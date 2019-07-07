@@ -2,7 +2,7 @@ import requests as r
 import os
 
 def map_down:
-    inputData = r.get('http://192.168.43.128:8000/static/map.txt')
+    inputData = r.get('http://192.168.1.206:8000/static/map.txt')
     path = '/home/pi/catkin_ws/src/clever/aruco_pose/map/map.txt'
 
     with open(path, 'r') as tempData: #/home/pi/catkin_ws/src/clever/aruco_pose/map/map.txt
