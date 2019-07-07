@@ -37,7 +37,10 @@ def post_telemetry(request):
             i.y = float(request.GET.get("y"))
             i.z = float(request.GET.get("z"))
             i.yaw = float(request.GET.get("yaw"))
-            i.voltage = float(request.GET.gat("cell_voltage"))
+            try:
+                i.voltage = float(request.GET.gat("cell_voltage"))
+            except:
+                i.voltage = 0
             return JsonResponse(i.toNewTelem())
 
 

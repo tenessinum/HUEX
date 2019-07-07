@@ -17,7 +17,7 @@ class Clever:
         self.z = 0
         self.yaw = 0
         self.ip = ip
-        self.voltage = 4.2
+        self.voltage = 0
         self.commands = []
 
     def random(self):
