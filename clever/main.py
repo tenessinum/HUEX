@@ -90,7 +90,7 @@ def land_to(x, y, z, speed, yaw=float('nan'), frame_id='aruco_map', tolerance=0.
     else:
         interrupt = False
         print('interrupted')
-        set_position(x=telemetry.x, y=telemetry.y, z= .z, yaw=float('nan'), frame_id=frame_id)
+        set_position(x=telemetry.x, y=telemetry.y, z=telemetry.z, yaw=float('nan'), frame_id=frame_id)
     print('ready')
 
 
