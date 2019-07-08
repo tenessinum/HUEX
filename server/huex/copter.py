@@ -77,6 +77,6 @@ class Clever:
             nav_point = self.commands[0]
             dist = get_distance(nav_point['pose']['x'], nav_point['pose']['y'], nav_point['pose']['z'], self.x, self.y,
                                 self.z)
-            if dist < threshold:
+            if dist < threshold or (self.status == 'land' and self.commands[0]['status'] == 'land'):
                 self.commands.pop(0)
             return self.commands[0]
