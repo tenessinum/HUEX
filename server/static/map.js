@@ -185,7 +185,7 @@ canvas.on('mouse:down', function (opt) {
         var land_point = opt.absolutePointer;
         var point1 = get_point(land_point.x, -land_point.y);
         if (point1 === -1 && choses.length === 0) {
-            let request = new XMLHttpRequest();
+            /*let request = new XMLHttpRequest();
             let send_data = {
                 id: choose_id,
                 command: choose_type,
@@ -195,7 +195,7 @@ canvas.on('mouse:down', function (opt) {
             };
             request.open('GET', '/send?' + Object.entries(send_data).map(e => e.join('=')).join('&'), true);
             request.send(null);
-            choosing = false;
+            choosing = false;*/
         } else {
             if (chosen === 0) {
                 var point1 = get_point(opt.absolutePointer.x, -opt.absolutePointer.y);

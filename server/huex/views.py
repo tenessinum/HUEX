@@ -5,6 +5,9 @@ from huex.copter import Clever
 import random
 from json import load, dump
 from huex.graphs import build_path, renew, printttt
+import logging
+
+logging.disable(logging.NOTSET)
 
 '''
 copters = [Clever('0.0.0.0'), Clever('0.0.0.1'), Clever('0.0.0.2')]
@@ -12,7 +15,7 @@ for i in copters:
     i.random()
 '''
 
-copters = [Clever('0.0.0.0')]
+copters = [Clever('0.0.0.13')]
 
 
 def main(request):
@@ -42,7 +45,7 @@ def post_telemetry(request):
                 i.voltage = float(request.GET.get("cell_voltage"))
             except:
                 i.voltage = 0
-            return JsonResponse(i.toNewTelem())
+            return JsonResponse(i.toNewTelem(copters))
 
 
 def get_info(request):
@@ -73,10 +76,10 @@ def random_drone():
 
 def send_command(request):
     data = request.GET.dict()
-    if data['command'] == 'build_path':
+    '''if data['command'] == 'build_path':
         try:
             path = build_path(str(data['o']) + '0', str(data['t']) + '0')
-            print(path)
+            print("My path is", path)
             with open('static/roads.json', 'r') as f:
                 file_data = load(f)
                 for i in path:
@@ -85,6 +88,7 @@ def send_command(request):
                         z = 1.5
                     elif i[len(i) - 1] == '1':
                         z = 2.5
+                    copters[int(data["id"])].path.append(int(i[:-1]))
                     copters[int(data["id"])].addCommand({
                         "command": 'fly',
                         "x": file_data['points'][int(i[:-1])]['x'], "y": file_data['points'][int(i[:-1])]['y'], "z": z,
@@ -96,10 +100,26 @@ def send_command(request):
                     "y": file_data['points'][int(path[len(path) - 1][:-1])]['y'], "z": 1.5,
                     "yaw": copters[int(data["id"])].yaw
                 })
+                copters[int(data["id"])].path.append(
+                    copters[int(data["id"])].path[len(copters[int(data["id"])].path) - 1])
+
         except Exception:
             print('There is no available path')
     else:
         copters[int(data["id"])].addCommand(data)
+        copters[int(data["id"])].path.append(-1)'''
+
+    if data['command'] == 'build_path':
+        try:
+            if not copters[int(data["id"])].path:
+                path = build_path(str(data['o']) + '0', str(data['t']) + '0')
+                copters[int(data["id"])].path += path
+                print('Copter\'s path is now', copters[int(data["id"])].path)
+            else:
+                return JsonResponse({'m': 'busy'})
+        except:
+            print('There is no available path')
+            return JsonResponse({"m": "no way"})
 
     # printttt()
     return JsonResponse({"m": "ok"})
@@ -138,7 +158,8 @@ def set_field(request):
                 i = 0
                 while i < len(file_data["lines"]):
                     if file_data["lines"][i]["1"] == int(data["n"]) or file_data["lines"][i]["2"] == int(data["n"]):
-                        print(file_data["lines"].pop(i))
+                        # print(file_data["lines"].pop(i))
+                        pass
                     else:
                         i += 1
                 for i in range(0, len(file_data['lines'])):
