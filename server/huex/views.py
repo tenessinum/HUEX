@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from huex.copter import Clever
 import random
 from json import load, dump
-from huex.graphs import build_path, renew
+from huex.graphs import build_path, renew, printttt
 
 '''
 copters = [Clever('0.0.0.0'), Clever('0.0.0.1'), Clever('0.0.0.2')]
@@ -74,33 +74,34 @@ def random_drone():
 def send_command(request):
     data = request.GET.dict()
     if data['command'] == 'build_path':
-        # try:
-        path = build_path(str(data['o']) + '0', str(data['t']) + '0')
-        print(path)
-        with open('static/roads.json', 'r') as f:
-            file_data = load(f)
-            for i in path:
-                z = 0
-                if i[len(i) - 1] == '0':
-                    z = 1.5
-                elif i[len(i) - 1] == '1':
-                    z = 2.5
+        try:
+            path = build_path(str(data['o']) + '0', str(data['t']) + '0')
+            print(path)
+            with open('static/roads.json', 'r') as f:
+                file_data = load(f)
+                for i in path:
+                    z = 0
+                    if i[len(i) - 1] == '0':
+                        z = 1.5
+                    elif i[len(i) - 1] == '1':
+                        z = 2.5
+                    copters[int(data["id"])].addCommand({
+                        "command": 'fly',
+                        "x": file_data['points'][int(i[:-1])]['x'], "y": file_data['points'][int(i[:-1])]['y'], "z": z,
+                        "yaw": copters[int(data["id"])].yaw
+                    })
                 copters[int(data["id"])].addCommand({
-                    "command": 'fly',
-                    "x": file_data['points'][int(i[:-1])]['x'], "y": file_data['points'][int(i[:-1])]['y'], "z": z,
+                    "command": 'land',
+                    "x": file_data['points'][int(path[len(path) - 1][:-1])]['x'],
+                    "y": file_data['points'][int(path[len(path) - 1][:-1])]['y'], "z": 1.5,
                     "yaw": copters[int(data["id"])].yaw
                 })
-            copters[int(data["id"])].addCommand({
-                "command": 'land',
-                "x": file_data['points'][int(path[len(path) - 1][:-1])]['x'],
-                "y": file_data['points'][int(path[len(path) - 1][:-1])]['y'], "z": 1.5,
-                "yaw": copters[int(data["id"])].yaw
-            })
-    # except Exception:
-    #   print('There is no available path')
+        except Exception:
+            print('There is no available path')
     else:
         copters[int(data["id"])].addCommand(data)
 
+    # printttt()
     return JsonResponse({"m": "ok"})
 
 
