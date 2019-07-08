@@ -10,8 +10,7 @@ def get_distance(x1, y1, z1, x2, y2, z2):
 
 class Clever:
     def __init__(self, ip):
-        r = lambda: random.randint(0, 255)
-        self.led = '#%02X%02X%02X' % (r(), r(), r())
+        self.led = '#000000'
         self.status = "land"
         self.x = 0
         self.y = 0
@@ -68,7 +67,7 @@ class Clever:
         }
 
     def toNewTelem(self, copters=[]):
-        if len(self.commands) == 0:
+        '''if len(self.commands) == 0:
             return {
                 "led": self.led,
                 "status": self.status,
@@ -80,7 +79,7 @@ class Clever:
         elif len(self.commands) == 1:
             return self.commands[0]
         else:
-            '''nav_point = self.commands[0]
+            nav_point = self.commands[0]
             dist = get_distance(nav_point['pose']['x'], nav_point['pose']['y'], nav_point['pose']['z'], self.x, self.y,
                                 self.z)
             if (dist < threshold or (
@@ -96,52 +95,49 @@ class Clever:
             if self.commands[0]['status'] == 'land':
                 self.from_to = {'f': -1, 't': -1}
             return self.commands[0]'''
-            if not self.path:
-                return {
-                    "led": self.led,
-                    "status": 'land',  # fly, land
-                    "pose": {
-                        "x": self.x, "y": self.y, "z": 1.5,
-                        "yaw": self.yaw
-                    }
+        if not self.path:
+            # print("Empty paths")
+            return {
+                "led": self.led,
+                "status": 'land',  # fly, land
+                "pose": {
+                    "x": self.x, "y": self.y, "z": 1.5,
+                    "yaw": self.yaw
                 }
-            else:
-                with open('static/roads.json', 'r') as f:
-                    file_data = load(f)
+            }
+        else:
+            with open('static/roads.json', 'r') as f:
+                file_data = load(f)
 
-                    n = int(self.path[len(self.path) - 1][:-1])
-                    nav_point = file_data['points'][n]
-                    nav_point['z'] = 0
-                    if self.path[len(self.path) - 1] == '0':
-                        nav_point['z'] = 1.5
-                    elif self.path[len(self.path) - 1] == '1':
-                        nav_point['z'] = 2.5
+                n = int(self.path[0][:-1])
+                # print('My path is now', self.path)
+                nav_point = file_data['points'][n]
+                nav_point['z'] = 1.5
 
-                    dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
-                    if (dist < threshold or (
-                            self.status == 'land' and self.commands[0]['status'] == 'land')) and not checkCollisions(
-                        self,
-                        copters):
-                        return {
-                            "led": self.led,
-                            "status": 'fly',  # fly, land
-                            "pose": {
-                                "x": nav_point['x'], "y": nav_point['z'], "z": nav_point['z'],
-                                "yaw": self.yaw
-                            }
+                if self.path[0][-1:] == '0':
+                    nav_point['z'] = 1.5
+                elif self.path[0][-1:] == '1':
+                    nav_point['z'] = 2.5
+
+                dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
+                if (dist < threshold) and not checkCollisions(self, copters):
+                    self.path.pop(0)
+                    return self.toNewTelem(copters)
+
+                else:
+                    # print('Navigating to point', nav_point)
+                    return {
+                        "led": self.led,
+                        "status": 'fly',  # fly, land
+                        "pose": {
+                            "x": nav_point['x'], "y": nav_point['y'], "z": nav_point['z'],
+                            "yaw": self.yaw
                         }
-                    else:
-                        return {
-                            "led": self.led,
-                            "status": 'fly',  # fly, land
-                            "pose": {
-                                "x": self.x, "y": self.y, "z": self.z,
-                                "yaw": self.yaw
-                            }
-                        }
+                    }
 
 
 def checkCollisions(c, copters):
+    print("Checking")
     paths = []
     for i in copters:
         if i != c:
@@ -149,9 +145,9 @@ def checkCollisions(c, copters):
                 paths.append(i.path[0])
             except:
                 pass
-
+    print('\n\n\nEnemies are going to', paths, '\n\n\nAnd i go to', c.path[0])
     fact = c.path[0] in paths
     if fact:
-        print("Some collisions")
+        print("\n\n\nSome collisions\n\n\n")
 
     return fact

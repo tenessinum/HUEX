@@ -15,7 +15,7 @@ for i in copters:
     i.random()
 '''
 
-copters = [Clever('0.0.0.13')]
+copters = []
 
 
 def main(request):
@@ -116,6 +116,7 @@ def send_command(request):
                 copters[int(data["id"])].path += path
                 print('Copter\'s path is now', copters[int(data["id"])].path)
             else:
+                print("Bad path")
                 return JsonResponse({'m': 'busy'})
         except:
             print('There is no available path')
