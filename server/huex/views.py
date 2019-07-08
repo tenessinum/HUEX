@@ -74,25 +74,30 @@ def random_drone():
 def send_command(request):
     data = request.GET.dict()
     if data['command'] == 'build_path':
-        try:
-            path = build_path(int(data['o']), int(data['t']))
-            print(path)
-            with open('static/roads.json', 'r') as f:
-                file_data = load(f)
-                for i in path:
-                    copters[int(data["id"])].addCommand({
-                        "command": 'fly',
-                        "x": file_data['points'][i]['x'], "y": file_data['points'][i]['y'], "z": 1.5,
-                        "yaw": copters[int(data["id"])].yaw
-                    })
+        # try:
+        path = build_path(str(data['o']) + '0', str(data['t']) + '0')
+        print(path)
+        with open('static/roads.json', 'r') as f:
+            file_data = load(f)
+            for i in path:
+                z = 0
+                if i[len(i) - 1] == '0':
+                    z = 1.5
+                elif i[len(i) - 1] == '1':
+                    z = 2.5
                 copters[int(data["id"])].addCommand({
-                    "command": 'land',
-                    "x": file_data['points'][path[len(path) - 1]]['x'],
-                    "y": file_data['points'][path[len(path) - 1]]['y'], "z": 1.5,
+                    "command": 'fly',
+                    "x": file_data['points'][int(i[:-1])]['x'], "y": file_data['points'][int(i[:-1])]['y'], "z": z,
                     "yaw": copters[int(data["id"])].yaw
                 })
-        except Exception:
-            print('There is no available path')
+            copters[int(data["id"])].addCommand({
+                "command": 'land',
+                "x": file_data['points'][int(path[len(path) - 1][:-1])]['x'],
+                "y": file_data['points'][int(path[len(path) - 1][:-1])]['y'], "z": 1.5,
+                "yaw": copters[int(data["id"])].yaw
+            })
+    # except Exception:
+    #   print('There is no available path')
     else:
         copters[int(data["id"])].addCommand(data)
 
