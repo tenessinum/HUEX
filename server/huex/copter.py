@@ -142,19 +142,16 @@ class Clever:
 
 
 def checkCollisions(c, copters):
-    from_tos = []
+    paths = []
     for i in copters:
-        if i.from_to != c.from_to:
-            from_tos.append(i.from_to)
-    new_from_to = {'f': c.from_to['t'], 't': c.path[0]}
+        if i != c:
+            try:
+                paths.append(i.path[0])
+            except:
+                pass
 
-    fact = False
-    for i in from_tos:
-        if new_from_to['f'] == i['f'] or new_from_to['t'] == i['f'] or new_from_to['f'] == i['t'] or new_from_to['t'] == \
-                i['t']:
-            fact = True
-
+    fact = c.path[0] in paths
     if fact:
-        print('There are collisions!')
+        print("Some collisions")
 
     return fact
