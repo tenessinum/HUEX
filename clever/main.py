@@ -96,7 +96,7 @@ def land_to(x, y, z, speed, yaw=float('nan'), frame_id='aruco_map', tolerance=0.
         interrupt = False
         print('interrupted')
         set_position(x=telemetry.x, y=telemetry.y, z=telemetry.z, yaw=float('nan'), frame_id=frame_id)
-    print('ready')
+    print('landtoready')
 
 
 def fly(request, tgt=navigate_wait):
@@ -105,7 +105,7 @@ def fly(request, tgt=navigate_wait):
         for n in request['pose']:
             request['pose'][n] = round(float(request['pose'][n]), 3)
 
-        if request['pose'] != last_pose:
+        if request['pose'] != last_pose or tgt == land_to:
             last_pose = request['pose']
 
             if request['pose']['z'] <= 0:
@@ -140,9 +140,9 @@ def toHex(inpData):
     return [int(inpData[:2], 16), int(inpData[2:4], 16), int(inpData[4:], 16)]
 
 
-t = Thread(target=led.led_thread)
-t.daemon = True
-t.start()
+# t = Thread(target=led.led_thread)
+# t.daemon = True
+# t.start()
 
 map_down()
 while True:
@@ -158,10 +158,10 @@ while True:
             # led.mode = "off"
         if result['status'] == 'land' and flight_now:
             print('Landing')
-            # if fly_thread.is_alive():
-            #     interrupt = True
             if fly_thread.is_alive():
                 interrupt = True
+                rospy.sleep(1)
+                interrupt = False
             fly(result, tgt=land_to)
             flight_now = False
         if result['status'] == 'fly':
