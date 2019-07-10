@@ -21,7 +21,7 @@ land_voltage = 3.5
 PARAMS_NAME = ('x', 'y', 'z', 'yaw', 'mode', 'cell_voltage')
 
 rospy.init_node('flight')
-get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
+get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry, persistent=True)
 navigate = rospy.ServiceProxy('navigate', srv.Navigate)
 set_position = rospy.ServiceProxy('set_position', srv.SetPosition)
 land = rospy.ServiceProxy('land', Trigger)
