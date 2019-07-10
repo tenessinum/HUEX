@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ "$EUID" -ne 0 ]
+if [[ "$EUID" -ne 0 ]]
   then echo "Please run as root"
   exit
 fi
@@ -16,7 +16,7 @@ index=0
 while read line; do
 	array[$index]="$line"
 	index=$(($index+1))
-done < /home/pi/networkData.txt
+done < networkData.txt
 
 ssid=${array[0]}
 pass=${array[1]}
@@ -28,10 +28,10 @@ echo "Network name:   $ssid"
 echo "Password:       $pass"
 
 echo  "========================================="
-echo -n "Is your data correct? Want to continue? [Y/n] "
+echo -n "Is your data correct? Want to continue? [y/n] "
 
 read item
-case $item in 
+case ${item} in
 y|Y) 
 
 sudo systemctl stop dnsmasq
