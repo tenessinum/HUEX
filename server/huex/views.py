@@ -14,7 +14,7 @@ for i in copters:
     i.random()
 '''
 
-copters = [Clever('1.2.3.4'), Clever('1.2.3.5')]
+copters = []
 
 
 def main(request):
@@ -40,10 +40,11 @@ def post_telemetry(request):
             i.y = float(request.GET.get("y"))
             i.z = float(request.GET.get("z"))
             i.yaw = float(request.GET.get("yaw"))
-            try:
-                i.voltage = float(request.GET.get("cell_voltage"))
-            except:
+            print(float(request.GET.get("cell_voltage")))
+            if str(float(request.GET.get("cell_voltage"))) == 'nan':
                 i.voltage = 0
+            else:
+                i.voltage = float(request.GET.get("cell_voltage"))
             return JsonResponse(i.toNewTelem(copters))
 
 

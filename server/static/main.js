@@ -22,7 +22,7 @@ function get_telemetry() {
     }
 }
 
-function update() {
+async function update() {
     let data = get_telemetry();
     let list = document.getElementById("drones-list");
     if (data !== null) {
