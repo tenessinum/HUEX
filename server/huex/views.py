@@ -7,15 +7,14 @@ from json import load, dump
 from huex.graphs import build_path, renew, printttt
 import logging
 
-logging.disable(logging.NOTSET)
-
+logging.disable(logging.CRITICAL)
 '''
 copters = [Clever('0.0.0.0'), Clever('0.0.0.1'), Clever('0.0.0.2')]
 for i in copters:
     i.random()
 '''
 
-copters = []
+copters = [Clever('1.2.3.4'), Clever('1.2.3.5')]
 
 
 def main(request):
@@ -121,6 +120,8 @@ def send_command(request):
         except:
             print('There is no available path')
             return JsonResponse({"m": "no way"})
+    elif data['command'] == 'force_land':
+        copters[int(data["id"])].force_landed = True
 
     # printttt()
     return JsonResponse({"m": "ok"})

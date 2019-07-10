@@ -66,7 +66,7 @@ function loadField() {
 
     }
     let req = new XMLHttpRequest();
-    req.open('GET', '/static/roads.json', false);
+    req.open('POST', '/static/roads.json', false);
     req.send();
     if (req.status === 200) {
         var canvas_data = JSON.parse(req.responseText);

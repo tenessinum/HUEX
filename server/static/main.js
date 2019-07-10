@@ -90,13 +90,13 @@ function addLabel(id, el) {
         "</div>" +
         "<div class='colorel' id='" + id + "colorpicker'></div></div><hr id='" + id + "hr' />";
     /*id='" + id + "color'*/
-    $("#" + id + "colorpicker").spectrum({
-        color: "#f00",
+    $(".colorel").spectrum({
+        color: "#000",
         preferredFormat: 'rgb'
     });
-    $("#" + id + "colorpicker").on('hide.spectrum', function (e, tinycolor) {
+    $(".colorel").on('hide.spectrum', function (e, tinycolor) {
         let request = new XMLHttpRequest();
-        request.open('GET', '/set_color?id=' + id + '&color=' + toHex(tinycolor._r) + toHex(tinycolor._g) + toHex(tinycolor._b), false);
+        request.open('GET', '/set_color?id=' + parseInt(e.currentTarget.id) + '&color=' + toHex(tinycolor._r) + toHex(tinycolor._g) + toHex(tinycolor._b), false);
         request.send();
     });
 }

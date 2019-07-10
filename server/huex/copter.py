@@ -2,6 +2,7 @@ import random
 from json import load
 
 threshold = 0.2  # meters
+dangerous_threshold = 0.3
 
 
 def get_distance(x1, y1, z1, x2, y2, z2):
@@ -24,6 +25,7 @@ class Clever:
             'f': -1,
             't': -1
         }
+        self.force_landed = False
 
     def random(self):
         r = lambda: random.randint(0, 255)
@@ -67,36 +69,17 @@ class Clever:
         }
 
     def toNewTelem(self, copters=[]):
-        '''if len(self.commands) == 0:
+        if self.force_landed:
             return {
                 "led": self.led,
-                "status": self.status,
+                "status": 'force_land',
                 "pose": {
                     "x": self.x, "y": self.y, "z": self.z,
                     "yaw": self.yaw
                 }
             }
-        elif len(self.commands) == 1:
-            return self.commands[0]
-        else:
-            nav_point = self.commands[0]
-            dist = get_distance(nav_point['pose']['x'], nav_point['pose']['y'], nav_point['pose']['z'], self.x, self.y,
-                                self.z)
-            if (dist < threshold or (
-                    self.status == 'land' and self.commands[0]['status'] == 'land')) and not checkCollisions(self,
-                                                                                                             copters):
-                self.from_to['f'] = self.path.pop(0)
-                try:
-                    self.from_to['t'] = self.path[0]
-                except:
-                    self.from_to['t'] = self.from_to['f']
-                self.commands.pop(0)
-
-            if self.commands[0]['status'] == 'land':
-                self.from_to = {'f': -1, 't': -1}
-            return self.commands[0]'''
         if not self.path:
-            # print("Empty paths")
+            # print("Empty paths, return land")
             return {
                 "led": self.led,
                 "status": 'land',  # fly, land
@@ -109,8 +92,8 @@ class Clever:
             with open('static/roads.json', 'r') as f:
                 file_data = load(f)
 
-                n = int(self.path[0][:-1])
-                # print('My path is now', self.path)
+                n = int(self.path[0][:-1]) \
+                    # print('My path is now', self.path)
                 nav_point = file_data['points'][n]
                 nav_point['z'] = 1.5
 
@@ -120,8 +103,9 @@ class Clever:
                     nav_point['z'] = 2.5
 
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
-                if (dist < threshold) and not checkCollisions(self, copters):
+                if (dist < threshold) and checkCollisions(self, copters):
                     self.path.pop(0)
+                    print('Point has been reached')
                     return self.toNewTelem(copters)
 
                 else:
@@ -137,7 +121,7 @@ class Clever:
 
 
 def checkCollisions(c, copters):
-    print("Checking")
+    # print("Checking")
     paths = []
     for i in copters:
         if i != c:
@@ -145,9 +129,36 @@ def checkCollisions(c, copters):
                 paths.append(i.path[0])
             except:
                 pass
-    print('\n\n\nEnemies are going to', paths, '\n\n\nAnd i go to', c.path[0])
+    print('Enemies are going to', paths, 'And i go to', c.path[0])
     fact = c.path[0] in paths
     if fact:
-        print("\n\n\nSome collisions\n\n\n")
+        print("\n\n\nSome collisions!!!\n\n\n")
+    else:
+        print("Everything is ok, but let me check")
+        for i in copters:
+            if i != c:
+                if get_d(c, i) < dangerous_threshold:
+                    if get_d_to_point(i, i.path[0]) < get_d_to_point(c, c.path[0]):
+                        pass
 
-    return fact
+    return not fact
+
+
+def get_d(c1, c2):
+    return get_distance(c1.x, c1.y, c1.z, c2.x, c2.y, c2.z)
+
+
+def get_d_to_point(c, p):
+    with open('static/roads.json', 'r') as f:
+        file_data = load(f)
+
+        n = int(p[:-1])
+        nav_point = file_data['points'][n]
+        nav_point['z'] = 1.5
+
+        if p[-1:] == '0':
+            nav_point['z'] = 1.5
+        elif p[-1:] == '1':
+            nav_point['z'] = 2.5
+
+        return get_distance(nav_point['x'], nav_point['y'], nav_point['z'], c.x, c.y, c.z)
