@@ -145,7 +145,7 @@ def toHex(inpData):
 # t.start()
 
 map_down()
-while True:
+while not rospy.is_shutdown():
     try:
         result = send_telemetry()
         if not connected:
@@ -191,5 +191,3 @@ while True:
         led.mode = "blink"
 
         print('Server fallen down, sleep 2 secs.')
-    except KeyboardInterrupt:
-        break
