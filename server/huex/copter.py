@@ -1,5 +1,6 @@
 import random
 from json import load
+from math import atan
 
 threshold = 0.2  # meters
 dangerous_threshold = 0.3
@@ -104,7 +105,12 @@ class Clever:
 
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
                 if (dist < threshold) and checkCollisions(self, copters):
-                    self.path.pop(0)
+                    try:
+                        old_point = file_data['points'][int(self.path.pop(0)[-1:])]
+                        new_point = file_data['points'][int(self.path[0][-1:])]
+                        self.yaw = get_angle(old_point, new_point)
+                    except:
+                        pass
                     print('Point has been reached')
                     return self.toNewTelem(copters)
 
@@ -162,3 +168,7 @@ def get_d_to_point(c, p):
             nav_point['z'] = 2.5
 
         return get_distance(nav_point['x'], nav_point['y'], nav_point['z'], c.x, c.y, c.z)
+
+
+def get_angle(o, n):
+    return atan((o.x - n.x) / (o.y - n.y))

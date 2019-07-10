@@ -39,7 +39,7 @@ def post_telemetry(request):
             i.x = float(request.GET.get("x"))
             i.y = float(request.GET.get("y"))
             i.z = float(request.GET.get("z"))
-            i.yaw = float(request.GET.get("yaw"))
+            # i.yaw = float(request.GET.get("yaw"))
             print(float(request.GET.get("cell_voltage")))
             if str(float(request.GET.get("cell_voltage"))) == 'nan':
                 i.voltage = 0
