@@ -21,7 +21,7 @@ land_voltage = 3.5
 PARAMS_NAME = ('x', 'y', 'z', 'yaw', 'mode', 'cell_voltage')
 
 rospy.init_node('flight')
-get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)
+get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry, persistent=True)
 navigate = rospy.ServiceProxy('navigate', srv.Navigate)
 set_position = rospy.ServiceProxy('set_position', srv.SetPosition)
 land = rospy.ServiceProxy('land', Trigger)
@@ -145,7 +145,7 @@ def toHex(inpData):
 # t.start()
 
 map_down()
-while True:
+while not rospy.is_shutdown():
     try:
         result = send_telemetry()
         if not connected:
@@ -191,5 +191,3 @@ while True:
         led.mode = "blink"
 
         print('Server fallen down, sleep 2 secs.')
-    except KeyboardInterrupt:
-        break
