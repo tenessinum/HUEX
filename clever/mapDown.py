@@ -32,3 +32,5 @@ def map_down():
                 else:
                     print('Map is correct. Starting...')
             break
+        else:
+            sleep(5)
