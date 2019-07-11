@@ -5,7 +5,7 @@ from time import sleep
 
 
 def map_down():
-    while True:
+    while not rospy.is_shutdown():
         try:
             input_data = r.get(consts.SERVER_IP + '/static/map.txt')
         except r.exceptions.ConnectionError:
@@ -32,3 +32,5 @@ def map_down():
                 else:
                     print('Map is correct. Starting...')
             break
+        else:
+            sleep(5)

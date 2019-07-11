@@ -8,7 +8,7 @@ import requests as r
 import math
 from mapDown import map_down
 import consts
-import LedLib as led
+from led.msg import LedModeColor
 
 
 def get_distance(x1, y1, z1, x2, y2, z2):
@@ -20,6 +20,7 @@ land_voltage = 3.5
 
 PARAMS_NAME = ('x', 'y', 'z', 'yaw', 'mode', 'cell_voltage')
 
+pub = rospy.Publisher('ledtopic', LedModeColor, queue_size=10)
 rospy.init_node('flight')
 get_telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry, persistent=True)
 navigate = rospy.ServiceProxy('navigate', srv.Navigate)
@@ -34,10 +35,11 @@ last_pose = False
 fly_thread = Thread()
 interrupt = False
 connected = False
+params = False
 
 
 def send_telemetry(frame_id='aruco_map'):
-    global telemetry
+    global telemetry, params
     # print('start')
     telemetry = get_telemetry(frame_id=frame_id)
     # print('got')
@@ -64,13 +66,13 @@ def take_off(z=1.5, speed=SPEED):
     # rospy.sleep(1)
 
 
-def navigate_wait(x, y, z, speed, yaw=float('nan'), frame_id='aruco_map', tolerance=0.2, timeout=10):
+def navigate_wait(x, y, z, speed=SPEED, yaw=float('nan'), frame_id='aruco_map', tolerance=0.2, timeout=10):
     global telemetry, interrupt
     navigate(x=x, y=y, z=z, speed=speed, yaw=yaw, frame_id=frame_id)
     print('start')
     while not interrupt:
         telem = telemetry
-        # print(telem)
+        print(params)
         if get_distance(x, y, z, telem.x, telem.y, telem.z) < tolerance:
             set_position(x=x, y=y, z=z, yaw=yaw, frame_id=frame_id)
             break
@@ -81,7 +83,7 @@ def navigate_wait(x, y, z, speed, yaw=float('nan'), frame_id='aruco_map', tolera
     print('ready')
 
 
-def land_to(x, y, z, speed, yaw=float('nan'), frame_id='aruco_map', tolerance=0.2):
+def land_to(x, y, z, speed=SPEED, yaw=float('nan'), frame_id='aruco_map', tolerance=0.2):
     global telemetry, interrupt
     navigate(x=x, y=y, z=z, speed=speed, yaw=yaw, frame_id=frame_id)
     print('start')
@@ -111,10 +113,12 @@ def fly(request, tgt=navigate_wait):
             if request['pose']['z'] <= 0:
                 request['pose']['z'] = get_telemetry(frame_id='aruco_map').z
 
+            print('Navigating from', params)
             print('Navigating to', request['pose'])
+
             fly_thread = Thread(target=tgt,
                                 kwargs={'x': request['pose']['x'], 'y': request['pose']['y'],
-                                        'z': request['pose']['z'], 'speed': SPEED, 'yaw': float('nan'),
+                                        'z': request['pose']['z'], 'speed': SPEED, 'yaw': request['pose']['yaw'],
                                         'frame_id': 'aruco_map'})
             fly_thread.daemon = True
             fly_thread.start()
@@ -126,7 +130,7 @@ def fly(request, tgt=navigate_wait):
         print('alive')
 
 
-def forceLand(ans=""):
+def force_land(ans=""):
     global interrupt
     if fly_thread.is_alive():
         interrupt = True
@@ -135,21 +139,28 @@ def forceLand(ans=""):
     quit()
 
 
-def toHex(inpData):
-    inpData = inpData.replace("#", '')
-    return [int(inpData[:2], 16), int(inpData[2:4], 16), int(inpData[4:], 16)]
+def hex_to_rgb(input_hex):
+    input_hex = input_hex.replace("#", '')
+    return int(input_hex[:2], 16), int(input_hex[2:4], 16), int(input_hex[4:], 16)
 
 
-# t = Thread(target=led.led_thread)
-# t.daemon = True
-# t.start()
+def to_led(r,g,b,mode):
+    global pub
+    message = LedModeColor()
+    message.color.r = r
+    message.color.g = g
+    message.color.b = b
+    message.mode = mode
+    pub.publish(message)
+
 
 map_down()
 while not rospy.is_shutdown():
     try:
         result = send_telemetry()
+        # print(result)
         if not connected:
-            led.mode = 'off'
+            # led.mode = 'off'
             connected = True
         if result['status'] == 'take_off' and not flight_now:
             # led.mode = "blink"
@@ -166,7 +177,7 @@ while not rospy.is_shutdown():
             flight_now = False
         if result['status'] == 'fly':
             if telemetry.cell_voltage <= land_voltage:
-                forceLand("Low voltage")
+                force_land("Low voltage")
             else:
                 if flight_now:
                     fly(result)
@@ -174,20 +185,18 @@ while not rospy.is_shutdown():
                     take_off()
                     flight_now = True
         if result['status'] == 'force_land':
-            forceLand()
+            force_land()
 
-        led.mode = 'fill'
-        colors = toHex(result['led'])
-        led.r = colors[0]
-        led.g = colors[1]
-        led.b = colors[2]
+        color = hex_to_rgb(result['led'])
+        to_led(*color, mode='fill')
+        # led.mode = 'fill'
+        # colors = hex_to_rgb(result['led'])
+        # led.r = colors[0]
+        # led.g = colors[1]
+        # led.b = colors[2]
 
     except r.exceptions.ConnectionError:
         connected = False
-        led.r = 255
-        led.g = 0
-        led.b = 0
-        led.wait_ms = 50
-        led.mode = "blink"
+        to_led(255, 0, 0, 'blink')
 
         print('Server fallen down, sleep 2 secs.')
