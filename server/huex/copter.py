@@ -104,18 +104,14 @@ class Clever:
                     nav_point['z'] = 2.5
 
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
-                if (dist < threshold) and checkCollisions(self, copters):
+                if (dist < threshold) and (not checkCollisions(self, copters)):
                     try:
                         old_point = file_data['points'][int(self.path[0][:-1])]
-                        print('deleted point', self.path.pop(0), 'path is now', self.path)
+                        self.path.pop(0)
                         new_point = file_data['points'][int(self.path[0][:-1])]
-                        print('got old', old_point)
-                        print('got new', new_point)
                         self.yaw = get_angle(old_point, new_point)
-                        print('Yaw is', self.yaw)
                     except:
-                        print('bad yaw')
-                    print('Point has been reached')
+                        pass
                     return self.toNewTelem(copters)
 
                 else:
@@ -139,11 +135,13 @@ def checkCollisions(c, copters):
                 paths.append(i.path[0])
             except:
                 pass
-    # print('Enemies are going to', paths, 'And i go to', c.path[0])
+    print('Enemies are going to', paths, 'And i go to', c.path[0])
     fact = c.path[0] in paths
+    '''
     if fact:
         pass
     # print("\n\n\nSome collisions!!!\n\n\n")
+    
     else:
         # print("Everything is ok, but let me check")
         for i in copters:
@@ -151,8 +149,8 @@ def checkCollisions(c, copters):
                 if get_d(c, i) < dangerous_threshold:
                     if get_d_to_point(i, i.path[0]) < get_d_to_point(c, c.path[0]):
                         pass
-
-    return not fact
+    '''
+    return fact
 
 
 def get_d(c1, c2):

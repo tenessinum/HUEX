@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HUEX Mobile</title>
+    <script>let arr = {{ array }};</script>
+    <link rel="stylesheet" href="/static/mobile.css">
+    <link rel='stylesheet' href='/static/spectrum.css'/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/ico/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/ico/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/ico/favicon-16x16.png">
+    <link rel="manifest" href="/static/ico/site.webmanifest">
+    <link rel="mask-icon" href="/static/ico/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="/static/ico/favicon.ico">
+    <meta name="msapplication-TileColor" content="#00aba9">
+    <meta name="msapplication-config" content="/static/ico/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div class="mcontainer">
+    <div class="list">
+        <div class="block">
+            <h1 style="margin-bottom: 50px;">Выберите точку отправления</h1>
+            {% for i in array %}
+                <h1 onclick="next({{ i }})" class="el">{{ i }}</h1>
+            {% endfor %}
+        </div>
+        <div class="block">
+            <h1 style="margin-bottom: 50px;">Выберите точку отправления</h1>
+            {% for i in array %}
+                <h1 onclick="next({{ i }})" class="el">{{ i }}</h1>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="block next_butt">
+        <div class="container">
+            <p>Поехали!</p></div>
+    </div>
+</div>
+<script src="/static/mobile.js"></script>
+</body>
+</html>

@@ -22,6 +22,14 @@ def main(request):
     return render(request, "main.html", data)
 
 
+def mobile(request):
+    data = dict()
+    with open('static/roads.json', 'r') as f:
+        file = load(f)
+        data['array'] = [i for i in range(0, len(file['points']))]
+    return render(request, "mobile.html", data)
+
+
 def delete(request):
     copters.pop(int(request.GET.dict()["id"]))
     return JsonResponse({})
