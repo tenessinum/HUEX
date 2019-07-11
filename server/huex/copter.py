@@ -1,6 +1,6 @@
 import random
 from json import load
-from math import atan
+from math import atan, pi
 
 threshold = 0.2  # meters
 dangerous_threshold = 0.3
@@ -176,4 +176,7 @@ def get_d_to_point(c, p):
 
 
 def get_angle(o, n):
-    return atan((o['x'] - n['x']) / (o['y'] - n['y']))
+    try:
+        return atan((o['x'] - n['x']) / (o['y'] - n['y'])) - pi / 2
+    except:
+        return -pi / 2
