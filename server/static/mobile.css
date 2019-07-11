@@ -47,7 +47,7 @@ body {
 
 .next_butt {
     color: #f4f4f4;
-    background-color: #55942f;
+    background-color: #94322e;
     height: calc(20% - 150px);
     font-size: 40px;
     cursor: pointer;
@@ -59,15 +59,18 @@ body {
     padding: 20px;
     border-radius: 10px;
     color: #f8f8f8;
-    background-color: #b2b2b2;
+    background-color: #a4a4a4;
 }
 
 .list {
-    position: absolute;
-    top: 3rem;
-    left: 3rem;
-    width: 200%;
+    width: 100%;
     height: 100%;
     display: flex;
     flex-direction: row;
+}
+
+.holder {
+    width: 100%;
+    height: calc(100% - 89px);
+    overflow: auto;
 }

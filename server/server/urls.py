@@ -11,5 +11,8 @@ urlpatterns = [
     path('send', views.send_command),  # For sending commands from web
     path('delete', views.delete),  # For deleting drones
     path('set', views.set_field),  # For changing map
-    path('set_color', views.set_color)  # For changing map
+    path('set_color', views.set_color),  # For changing map
+    path('ask_taxi', views.ask_taxi),  # For asking taxi
+    path('get_dist', views.get_dist),  # For counting distance
+    path('guest', views.guest_page)
 ]

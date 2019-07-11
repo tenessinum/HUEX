@@ -1,5 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from huex.copter import Clever
 import random
@@ -7,19 +7,23 @@ from json import load, dump
 from huex.graphs import build_path, renew, printttt
 import logging
 
+allowed_ips = ['127.0.0.1']
+
 logging.disable(logging.CRITICAL)
-'''
-copters = [Clever('0.0.0.0'), Clever('0.0.0.1'), Clever('0.0.0.2')]
-for i in copters:
-    i.random()
-'''
 
 copters = []
 
 
 def main(request):
     data = dict()
-    return render(request, "main.html", data)
+    if get_client_ip(request) in allowed_ips:
+        return render(request, "main.html", data)
+    else:
+        return redirect('https://github.com/Tennessium/HUEX')
+
+
+def guest_page(request):
+    return render(request, 'chpage.html', dict())
 
 
 def mobile(request):
@@ -83,39 +87,6 @@ def random_drone():
 
 def send_command(request):
     data = request.GET.dict()
-    '''if data['command'] == 'build_path':
-        try:
-            path = build_path(str(data['o']) + '0', str(data['t']) + '0')
-            print("My path is", path)
-            with open('static/roads.json', 'r') as f:
-                file_data = load(f)
-                for i in path:
-                    z = 0
-                    if i[len(i) - 1] == '0':
-                        z = 1.5
-                    elif i[len(i) - 1] == '1':
-                        z = 2.5
-                    copters[int(data["id"])].path.append(int(i[:-1]))
-                    copters[int(data["id"])].addCommand({
-                        "command": 'fly',
-                        "x": file_data['points'][int(i[:-1])]['x'], "y": file_data['points'][int(i[:-1])]['y'], "z": z,
-                        "yaw": copters[int(data["id"])].yaw
-                    })
-                copters[int(data["id"])].addCommand({
-                    "command": 'land',
-                    "x": file_data['points'][int(path[len(path) - 1][:-1])]['x'],
-                    "y": file_data['points'][int(path[len(path) - 1][:-1])]['y'], "z": 1.5,
-                    "yaw": copters[int(data["id"])].yaw
-                })
-                copters[int(data["id"])].path.append(
-                    copters[int(data["id"])].path[len(copters[int(data["id"])].path) - 1])
-
-        except Exception:
-            print('There is no available path')
-    else:
-        copters[int(data["id"])].addCommand(data)
-        copters[int(data["id"])].path.append(-1)'''
-
     if data['command'] == 'build_path':
         try:
             if not copters[int(data["id"])].path:
@@ -123,7 +94,7 @@ def send_command(request):
                 copters[int(data["id"])].path += path
                 print('Copter\'s path is now', copters[int(data["id"])].path)
             else:
-                print("Bad path")
+                print("Error while building path")
                 return JsonResponse({'m': 'busy'})
         except:
             print('There is no available path')
@@ -192,3 +163,84 @@ def set_color(request):
     data = request.GET.dict()
     copters[int(data['id'])].led = '#' + data['color']
     return JsonResponse({})
+
+
+def get_dist(request):
+    data = request.GET.dict()
+    path = build_path(str(data['o']) + '0', str(data['t']) + '0')
+    dist = calc_path(path)
+    cost = 150 + dist * 30
+    return JsonResponse({'dist': dist, 'cost': cost})
+
+
+def get_distance(x1, y1, z1, x2, y2, z2):
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2) ** 0.5
+
+
+def calc_path(path):
+    dist = 0
+    with open('static/roads.json', 'r') as f:
+        data = load(f)
+    for i in range(0, len(path[:-1])):
+        p1 = {
+            'x': data['points'][int(path[i][:-1])]['x'],
+            'y': data['points'][int(path[i][:-1])]['y'],
+        }
+        if path[i][-1] == 0:
+            p1['z'] = 1.5
+        else:
+            p1['z'] = 2.5
+        p2 = {
+            'x': data['points'][int(path[i + 1][:-1])]['x'],
+            'y': data['points'][int(path[i + 1][:-1])]['y'],
+        }
+        if path[i + 1][-1] == 0:
+            p2['z'] = 1.5
+        else:
+            p2['z'] = 2.5
+        dist += get_distance(p1['x'], p1['y'], p1['z'], p2['x'], p2['y'], p2['z'])
+    return dist
+
+
+def ask_taxi(request):
+    data = request.GET.dict()
+    busy = 0
+    points = []
+    for i in copters:
+        if i.path != []:
+            busy += 1
+            points.append(-1)
+        else:
+            points.append(get_nearest_point(i))
+
+    if busy == len(copters):
+        return JsonResponse({'m': 'busy'})
+
+    paths = []
+    for i in range(0, len(points)):
+        if points[i] != -1:
+            paths.append(calc_path(build_path(str(points[i]) + '0', str(data['o']) + '0')))
+        else:
+            paths.append(9999999)
+
+    print(paths, min(paths))
+    nearest_copter = copters[paths.index(min(paths))]
+    nearest_copter.path += build_path(str(get_nearest_point(nearest_copter)) + '0', str(data['o']) + '0')
+    nearest_copter.path += build_path(str(data['o']) + '0', str(data['t']) + '0')
+    r = lambda: random.randint(0, 255)
+    nearest_copter.led = '#%02X%02X%02X' % (r(), r(), r())
+
+    return JsonResponse({'m': 'ok', 'color': nearest_copter.led})
+
+
+def get_nearest_point(c):
+    index = 0
+    min_dist = 9999999
+    with open('static/roads.json', 'r') as f:
+        data = load(f)
+    for i in range(0, len(data['points'])):
+        dist = get_distance(c.x, c.y, 0, data['points'][i]['x'], data['points'][i]['y'], 0)
+        if min_dist > dist:
+            index = i
+            min_dist = dist
+    return index

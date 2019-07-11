@@ -14,8 +14,8 @@ class Clever:
     def __init__(self, ip):
         self.led = '#000000'
         self.status = "land"
-        self.x = 0
-        self.y = 0
+        self.x = random.randint(0, 100) / 100
+        self.y = random.randint(0, 100) / 100
         self.z = 0
         self.yaw = 0
         self.ip = ip

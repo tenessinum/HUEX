@@ -20,21 +20,18 @@
 <div class="mcontainer">
     <div class="list">
         <div class="block">
-            <h1 style="margin-bottom: 50px;">Выберите точку отправления</h1>
-            {% for i in array %}
-                <h1 onclick="next({{ i }})" class="el">{{ i }}</h1>
-            {% endfor %}
-        </div>
-        <div class="block">
-            <h1 style="margin-bottom: 50px;">Выберите точку отправления</h1>
-            {% for i in array %}
-                <h1 onclick="next({{ i }})" class="el">{{ i }}</h1>
-            {% endfor %}
+            <h1 id="name" style="margin-bottom: 50px;">Выберите точку отправления</h1>
+            <div class="holder">
+                {% for i in array %}
+                    <h1 id="{{ i }}el" onclick="next({{ i }})" class="el">{{ i }}</h1>
+                {% endfor %}
+            </div>
         </div>
     </div>
-    <div class="block next_butt">
+
+    <div id="butt" class="block next_butt">
         <div class="container">
-            <p>Поехали!</p></div>
+            <p id="text">Поехали!</p></div>
     </div>
 </div>
 <script src="/static/mobile.js"></script>
