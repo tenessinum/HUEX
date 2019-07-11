@@ -2,6 +2,7 @@ import requests as r
 import os
 import consts
 from time import sleep
+import rospy
 
 
 def map_down():
