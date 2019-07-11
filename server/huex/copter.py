@@ -175,6 +175,6 @@ def get_d_to_point(c, p):
 
 def get_angle(o, n):
     try:
-        return atan2((o['x'] - n['x']), (o['y'] - n['y'])) - pi / 2
+        return 0  # atan2((o['x'] - n['x']), (o['y'] - n['y'])) - pi / 2
     except:
         return -pi / 2
