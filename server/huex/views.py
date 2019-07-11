@@ -135,6 +135,7 @@ def set_field(request):
     elif data['m'] == 'remove':
         if data['c'] == 'point':
             if int(data['n']) != -1:
+                file_data['points'].pop(int(data['n']))
                 i = 0
                 while i < len(file_data["lines"]):
                     if file_data["lines"][i]["1"] == int(data["n"]) or file_data["lines"][i]["2"] == int(data["n"]):
