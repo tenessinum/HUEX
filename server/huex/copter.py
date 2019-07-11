@@ -137,11 +137,10 @@ def checkCollisions(c, copters):
                 pass
     print('Enemies are going to', paths, 'And i go to', c.path[0])
     fact = c.path[0] in paths
-    '''
+
     if fact:
-        pass
-    # print("\n\n\nSome collisions!!!\n\n\n")
-    
+        print("\n\n\nSome collisions!!!\n\n\n")
+    '''
     else:
         # print("Everything is ok, but let me check")
         for i in copters:
