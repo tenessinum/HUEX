@@ -7,7 +7,7 @@ from json import load, dump
 from huex.graphs import build_path, renew, printttt
 import logging
 
-allowed_ips = ['127.0.0.1']
+allowed_ips = ['192.168.1.206']
 
 logging.disable(logging.CRITICAL)
 
