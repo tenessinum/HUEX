@@ -21,7 +21,7 @@ function work() {
         let resp = JSON.parse(req.responseText);
         console.log(resp);
         document.getElementById('butt').style.backgroundColor = '#aba72d';
-        document.getElementById('text').innerHTML = 'Поехали? ' + (Math.round(resp.dist * 100) / 100).toString() + 'm, ' + (Math.round(resp.cost * 100) / 100).toString() + 'р';
+        document.getElementById('text').innerHTML = 'Поехали? ' + (Math.round(resp.dist * 100) / 100).toString() + ' м, ' + (Math.round(resp.cost * 100) / 100).toString() + ' ₽';
     }
     document.getElementById('butt').onclick = function () {
         let req = new XMLHttpRequest();
