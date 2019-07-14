@@ -135,6 +135,8 @@ def force_land(ans=""):
     if fly_thread.is_alive():
         interrupt = True
     print("Force land. " + ans)
+    color = hex_to_rgb('#FF8000')
+    to_led(*color, mode='blink')
     land()
     quit()
 
