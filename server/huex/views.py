@@ -226,8 +226,10 @@ def ask_taxi(request):
 
     print(paths, min(paths))
     nearest_copter = copters[paths.index(min(paths))]
-    nearest_copter.path += build_path(str(get_nearest_point(nearest_copter)) + '0', str(data['o']) + '0')
-    nearest_copter.path.append('-1')
+    first_path = build_path(str(get_nearest_point(nearest_copter)) + '0', str(data['o']) + '0')
+    if len(first_path) != 1:
+        nearest_copter.path += first_path
+        nearest_copter.path.append('-1')
     nearest_copter.path += build_path(str(data['o']) + '0', str(data['t']) + '0')
     r = lambda: random.randint(0, 255)
     nearest_copter.led = '#%02X%02X%02X' % (r(), r(), r())
