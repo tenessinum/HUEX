@@ -7,7 +7,7 @@ from json import load, dump
 from huex.graphs import build_path, renew, printttt
 import logging
 
-allowed_ips = ['127.0.0.1', '192.168.1.206', '192.168.1.123', '192.168.1.168']
+allowed_ips = ['127.0.0.1', '192.168.1.206', '192.168.1.123', '192.168.1.168', '192.168.1.165']
 
 logging.disable(logging.CRITICAL)
 
@@ -227,6 +227,7 @@ def ask_taxi(request):
     print(paths, min(paths))
     nearest_copter = copters[paths.index(min(paths))]
     nearest_copter.path += build_path(str(get_nearest_point(nearest_copter)) + '0', str(data['o']) + '0')
+    nearest_copter.path.append('-1')
     nearest_copter.path += build_path(str(data['o']) + '0', str(data['t']) + '0')
     r = lambda: random.randint(0, 255)
     nearest_copter.led = '#%02X%02X%02X' % (r(), r(), r())
