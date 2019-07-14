@@ -58,7 +58,17 @@ function loadField() {
                 marker.set('top', marker.top - (a.tl.y + center.y) * 1000 / 18);
                 marker.set('left', marker.left + (a.tl.x - center.x) * 1000 / 18);
 
+                var text = new fabric.Text(i.toString(), {
+                    fontFamily: 'Delicious_500',
+                    left: marker.left,
+                    top: marker.top,
+                    fill: 'white',
+                    fontSize: 60
+                });
+
                 markers.push(marker);
+                markers.push(text);
+
             } catch (e) {
 
             }
@@ -89,6 +99,14 @@ function loadField() {
                 selectable: false
             });
             markers.push(line);
+            var text = new fabric.Text(i.toString(), {
+                fontFamily: 'Delicious_500',
+                left: line.left + 75,
+                top: line.top + 50,
+                fill: 'blue',
+                fontSize: 100
+            });
+            markers.push(text);
         }
     }
 
