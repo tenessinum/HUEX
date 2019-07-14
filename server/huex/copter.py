@@ -93,6 +93,18 @@ class Clever:
             with open('static/roads.json', 'r') as f:
                 file_data = load(f)
 
+                if self.path[0] == '-1':
+                    self.path.pop(0)
+                    print(self.path)
+                    return {
+                        "led": self.led,
+                        "status": 'land',
+                        "pose": {
+                            "x": self.x, "y": self.y, "z": 1.5,
+                            "yaw": self.yaw
+                        }
+                    }
+
                 n = int(self.path[0][:-1]) \
                     # print('My path is now', self.path)
                 nav_point = file_data['points'][n]
