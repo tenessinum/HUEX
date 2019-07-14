@@ -21,4 +21,7 @@ while True:
     data = r.get(path)
 
     print(data.json()['m'])
-    time.sleep(3)
+
+    if data.json()['m'] == 'ok':
+        time.sleep(5)
+

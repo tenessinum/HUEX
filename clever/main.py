@@ -157,6 +157,7 @@ def to_led(r,g,b,mode):
 
 
 map_down()
+
 while not rospy.is_shutdown():
     try:
         result = send_telemetry()
