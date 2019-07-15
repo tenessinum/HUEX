@@ -45,6 +45,7 @@ function loadField() {
                 marker.set({
                     angle: angle,
                     id: id,
+                    tip: 'm',
                     scaleX: size,
                     scaleY: size,
                     left: shiftX,
@@ -86,12 +87,15 @@ function loadField() {
             let line = new fabric.Line(coords, {
                 fill: 'red',
                 stroke: 'red',
+                tip: 'l',
                 strokeWidth: 15,
             });
             markers.push(line);
         }
         for (let i = 0; i < canvas_data.points.length; i++) {
             let line = new fabric.Circle({
+                tip: 'c',
+                id: i,
                 radius: 100,
                 fill: 'red',
                 left: canvas_data.points[i].x * 1000 - 100,
@@ -350,6 +354,31 @@ function drawDrones() {
     while (canvas._objects.length - thr > curr_telemetry.length) {
         canvas._objects.pop();
     }
+
+    let req = new XMLHttpRequest();
+    req.open('GET', '/get_busy_points', false);
+    req.send(null);
+    if (req.status === 200 && canvas._objects[0]._objects !== null) {
+        bpoints = JSON.parse(req.responseText).busy;
+        if (bpoints.length !== 0) {
+            for (let j = 0; j < canvas._objects[0]._objects.length; j++) {
+                if (canvas._objects[0]._objects[j].tip === 'c') {
+                    canvas._objects[0]._objects[j].fill = 'red';
+                }
+            }
+        }
+        for (let i = 0; i < bpoints.length; i++) {
+            for (let j = 0; j < canvas._objects[0]._objects.length; j++) {
+                if (canvas._objects[0]._objects[j].tip === 'c') {
+                    if (canvas._objects[0]._objects[j].id === bpoints[i]) {
+                        canvas._objects[0]._objects[j].set('fill', '#FFFF00');
+                    }
+                }
+            }
+        }
+    }
+    canvas.renderAll();
+
     for (let i = 0; i < curr_telemetry.length; i++) {
         canvas._objects[i + 1].set('fill', curr_telemetry[i].led);
         canvas._objects[i + 1].animate('left', curr_telemetry[i].pose.x * 1000 - 100, {
