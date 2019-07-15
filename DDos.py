@@ -2,7 +2,9 @@ import requests as r
 import random
 import time
 
-data = r.get('http://192.168.1.149:8000/static/roads.json')
+static_path = 'http://192.168.1.206:8000'
+
+data = r.get(static_path + '/static/roads.json')
 
 count = len(data.json()['points'])
 
@@ -16,12 +18,14 @@ while True:
         number2 = random.randint(0, count-1)
 
     print ('Request', number1, number2)
+    try:
+        path = static_path + '/ask_taxi?o=' + str(number1) + '&t=' + str(number2)
+        data = r.get(path)
 
-    path = 'http://192.168.1.149:8000/ask_taxi?o=' + str(number1) + '&t=' + str(number2)
-    data = r.get(path)
+        print(data.json()['m'])
 
-    print(data.json()['m'])
-
-    if data.json()['m'] == 'ok':
-        time.sleep(5)
+        if data.json()['m'] == 'ok':
+            time.sleep(5)
+    except:
+        pass
 
