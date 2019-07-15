@@ -95,7 +95,7 @@ class Clever:
                         }
                     }
                 self.status = 'fly'
-                n = int(self.path[0][:-1]) \
+                n = int(self.path[0][:-1])
                     # print('My path is now', self.path)
                 nav_point = file_data['points'][n]
                 nav_point['z'] = 1.5
