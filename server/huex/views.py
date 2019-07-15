@@ -259,3 +259,18 @@ def get_nearest_point(c):
             index = i
             min_dist = dist
     return index
+
+
+def get_busy_points(request):
+    arr = []
+
+    for i in copters:
+        try:
+            print(i.ip, i.last_point, i.path)
+            if i.last_point != -1:
+                arr.append(i.last_point)
+            arr.append(i.path[0])
+        except:
+            pass
+
+    return JsonResponse({'busy': arr})

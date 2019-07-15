@@ -14,14 +14,14 @@ class Clever:
     z = 0
     yaw = 0
     voltage = 0
-    path = []
+    led = '#000000'
+    status = "land"
     last_point = -1
-    busy_points = []
     force_landed = False
 
     def __init__(self, ip):
-        self.led = '#000000'
-        self.status = "land"
+        self.path = []
+        self.busy_points = []
         self.x = random.randint(0, 100) / 100
         self.y = random.randint(0, 100) / 100
         self.ip = ip

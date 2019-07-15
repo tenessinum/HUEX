@@ -13,5 +13,6 @@ urlpatterns = [
     path('set', views.set_field),  # For changing map
     path('set_color', views.set_color),  # For changing map
     path('ask_taxi', views.ask_taxi),  # For asking taxi
-    path('get_dist', views.get_dist)  # For counting distance
+    path('get_dist', views.get_dist),  # For counting distance
+    path('get_busy_points', views.get_busy_points)
 ]
