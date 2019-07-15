@@ -12,7 +12,7 @@ def get_distance(x1, y1, z1, x2, y2, z2):
 
 class Clever:
     z = 0
-    yaw = 0
+    yaw = pi / 2
     voltage = 0
     led = '#000000'
     status = "land"
@@ -184,6 +184,6 @@ def get_d_to_point(c, p):
 
 def get_angle(o, n):
     try:
-        return -pi / 2  # atan2((o['x'] - n['x']), (o['y'] - n['y'])) - pi / 2
+        return pi / 2  # atan2((o['x'] - n['x']), (o['y'] - n['y'])) - pi / 2
     except:
-        return -pi / 2
+        return pi / 2

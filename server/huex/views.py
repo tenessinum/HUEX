@@ -268,8 +268,8 @@ def get_busy_points(request):
         try:
             print(i.ip, i.last_point, i.path)
             if i.last_point != -1:
-                arr.append(i.last_point)
-            arr.append(i.path[0])
+                arr.append(int(i.last_point[:-1]))
+            arr.append(int(i.path[0][:-1]))
         except:
             pass
 
