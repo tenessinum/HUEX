@@ -11,22 +11,20 @@ def get_distance(x1, y1, z1, x2, y2, z2):
 
 
 class Clever:
+    z = 0
+    yaw = 0
+    voltage = 0
+    path = []
+    last_point = -1
+    busy_points = []
+    force_landed = False
+
     def __init__(self, ip):
         self.led = '#000000'
         self.status = "land"
         self.x = random.randint(0, 100) / 100
         self.y = random.randint(0, 100) / 100
-        self.z = 0
-        self.yaw = 0
         self.ip = ip
-        self.voltage = 0
-        self.commands = []
-        self.path = []
-        self.from_to = {
-            'f': -1,
-            't': -1
-        }
-        self.force_landed = False
 
     def random(self):
         r = lambda: random.randint(0, 255)
@@ -45,16 +43,6 @@ class Clever:
                 "yaw": self.yaw
             }
         }
-
-    def addCommand(self, command):
-        self.commands.append({
-            "led": self.led,
-            "status": command['command'],
-            "pose": {
-                "x": float(command['x']), "y": float(command['y']), "z": float(command['z']),
-                "yaw": self.yaw
-            }
-        })
 
     def toTelem(self):
         return {
@@ -81,6 +69,7 @@ class Clever:
             }
         if not self.path:
             # print("Empty paths, return land")
+            self.status = 'land'
             return {
                 "led": self.led,
                 "status": 'land',  # fly, land
@@ -95,7 +84,7 @@ class Clever:
 
                 if self.path[0] == '-1':
                     self.path.pop(0)
-                    print(self.path)
+                    self.status = 'land'
                     return {
                         "led": self.led,
                         "status": 'land',
@@ -104,7 +93,7 @@ class Clever:
                             "yaw": self.yaw
                         }
                     }
-
+                self.status = 'fly'
                 n = int(self.path[0][:-1]) \
                     # print('My path is now', self.path)
                 nav_point = file_data['points'][n]
@@ -114,12 +103,17 @@ class Clever:
                     nav_point['z'] = 1.5
                 elif self.path[0][-1:] == '1':
                     nav_point['z'] = 2.5
-
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
-                if (dist < threshold) and (not checkCollisions(self, copters)):
+                collisions = checkCollisions(self, copters)
+                '''if not collisions:
+                    print(self.ip, 'Collis is ok')
+                else:
+                    print(self.ip, 'Collis is bad')'''
+                if (dist < threshold) and (not collisions):
+                    print(self.ip, collisions, 'giving new point')
                     try:
                         old_point = file_data['points'][int(self.path[0][:-1])]
-                        self.path.pop(0)
+                        self.last_point = self.path.pop(0)
                         new_point = file_data['points'][int(self.path[0][:-1])]
                         self.yaw = get_angle(old_point, new_point)
                     except:
@@ -127,7 +121,6 @@ class Clever:
                     return self.toNewTelem(copters)
 
                 else:
-                    # print('Navigating to point', nav_point)
                     return {
                         "led": self.led,
                         "status": 'fly',  # fly, land
@@ -139,7 +132,7 @@ class Clever:
 
 
 def checkCollisions(c, copters):
-    # print("Checking")
+    # print(c.ip)
     paths = []
     for i in copters:
         if i != c:
@@ -147,20 +140,25 @@ def checkCollisions(c, copters):
                 paths.append(i.path[0])
             except:
                 pass
-    print('Enemies are going to', paths, 'And i go to', c.path[0])
+            try:
+                if i.last_point != -1 and i.status == 'fly':
+                    paths.append(i.last_point)
+            except:
+                pass
+    # print('Enemies are going to', paths, 'And i go to', c.path[0])
     fact = c.path[0] in paths
 
     if fact:
-        print("\n\n\nSome collisions!!!\n\n\n")
-    '''
+        print(c.ip, "Some collisions!!!")
     else:
         # print("Everything is ok, but let me check")
         for i in copters:
             if i != c:
                 if get_d(c, i) < dangerous_threshold:
                     if get_d_to_point(i, i.path[0]) < get_d_to_point(c, c.path[0]):
-                        pass
-    '''
+                        c.force_landed = True
+                        i.force_landed = True
+
     return fact
 
 
@@ -186,6 +184,6 @@ def get_d_to_point(c, p):
 
 def get_angle(o, n):
     try:
-        return 0  # atan2((o['x'] - n['x']), (o['y'] - n['y'])) - pi / 2
+        return -pi / 2  # atan2((o['x'] - n['x']), (o['y'] - n['y'])) - pi / 2
     except:
         return -pi / 2
