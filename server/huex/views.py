@@ -232,7 +232,7 @@ def ask_taxi(request):
         else:
             paths.append(9999999)
 
-    print(paths, min(paths))
+    # print(paths, min(paths))
     nearest_copter = copters[paths.index(min(paths))]
     first_path = build_path(str(get_nearest_point(nearest_copter)) + '0', str(data['o']) + '0')
     if len(first_path) != 1:
@@ -265,12 +265,13 @@ def get_busy_points(request):
     arr = []
 
     for i in copters:
-        try:
-            print(i.ip, i.last_point, i.path)
-            if i.last_point != -1:
-                arr.append(int(i.last_point[:-1]))
-            arr.append(int(i.path[0][:-1]))
-        except:
-            pass
+        if i.status != 'land':
+            try:
+                # print(i.ip, i.last_point, i.path)
+                if i.last_point != -1:
+                    arr.append(int(i.last_point[:-1]))
+                arr.append(int(i.path[0][:-1]))
+            except:
+                pass
 
     return JsonResponse({'busy': arr})

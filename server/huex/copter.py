@@ -12,7 +12,7 @@ def get_distance(x1, y1, z1, x2, y2, z2):
 
 class Clever:
     z = 0
-    yaw = pi / 2
+    yaw = -pi / 2
     voltage = 0
     led = '#000000'
     status = "land"
@@ -68,6 +68,7 @@ class Clever:
                 }
             }
         if not self.path:
+            self.busy_points = []
             # print("Empty paths, return land")
             self.status = 'land'
             return {
@@ -104,7 +105,7 @@ class Clever:
                 elif self.path[0][-1:] == '1':
                     nav_point['z'] = 2.5
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
-                collisions = checkCollisions(self, copters)
+                collisions = check_collisions(self, copters)
                 '''if not collisions:
                     print(self.ip, 'Collis is ok')
                 else:
@@ -131,11 +132,11 @@ class Clever:
                     }
 
 
-def checkCollisions(c, copters):
+def check_collisions(c, copters):
     # print(c.ip)
     paths = []
-    for i in copters:
-        if i != c:
+    '''for i in copters:
+        if i != c and i.status != 'land':
             try:
                 paths.append(i.path[0])
             except:
@@ -144,9 +145,25 @@ def checkCollisions(c, copters):
                 if i.last_point != -1 and i.status == 'fly':
                     paths.append(i.last_point)
             except:
-                pass
+                pass'''
+
+    for i in copters:
+        if i.ip != c.ip:
+            if i.status != 'land':
+                try:
+                    # print(i.ip, i.last_point, i.path)
+                    if i.last_point != -1:
+                        paths.append(i.last_point)
+                    paths.append(i.path[0])
+                except:
+                    pass
+
     # print('Enemies are going to', paths, 'And i go to', c.path[0])
-    fact = c.path[0] in paths
+    try:
+        fact = c.path[1] in paths
+        print(c.ip, 'I am flying to', c.path[1], 'and my enemies are flying to', paths)
+    except:
+        fact = False
 
     if fact:
         print(c.ip, "Some collisions!!!")
@@ -184,6 +201,6 @@ def get_d_to_point(c, p):
 
 def get_angle(o, n):
     try:
-        return pi / 2  # atan2((o['x'] - n['x']), (o['y'] - n['y'])) - pi / 2
+        return -pi / 2  # atan2((o['x'] - n['x']), (o['y'] - n['y'])) - pi / 2
     except:
-        return pi / 2
+        return -pi / 2
