@@ -66,7 +66,7 @@ def get_info(request):
     data["drones"] = []
 
     for i in range(0, len(copters)):
-        data["drones"].append(copters[i].toTelem())
+        data["drones"].append(copters[i].toTelem(copters))
 
     return JsonResponse(data)
 
@@ -92,17 +92,12 @@ def send_command(request):
             if not copters[int(data["id"])].path:
                 path = build_path(str(data['o']) + '0', str(data['t']) + '0')
                 copters[int(data["id"])].path += path
-                print('Copter\'s path is now', copters[int(data["id"])].path)
             else:
-                print("Error while building path")
                 return JsonResponse({'m': 'busy'})
         except:
-            print('There is no available path')
             return JsonResponse({"m": "no way"})
     elif data['command'] == 'force_land':
         copters[int(data["id"])].force_landed = True
-
-    # printttt()
     return JsonResponse({"m": "ok"})
 
 
@@ -268,9 +263,11 @@ def get_busy_points(request):
     for i in copters:
         if i.status != 'land':
             try:
-                # print(i.ip, i.last_point, i.path)
                 if i.last_point != -1:
                     arr.append(int(i.last_point[:-1]))
+            except:
+                pass
+            try:
                 arr.append(int(i.path[0][:-1]))
             except:
                 pass
