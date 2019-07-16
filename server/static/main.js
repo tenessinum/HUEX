@@ -11,35 +11,36 @@ var remove_line = false;
 var roads;
 let low_voltage = 3.8;
 
-function update() {
-    fetch('/get')
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (json) {
-            let data = json.drones;
-            let list = document.getElementById("drones-list");
-            if (data !== null) {
-                curr_telemetry = data;
-                drawDrones();
-                while (list.childElementCount / 2 > data.length) {
-                    removeLabel((list.childElementCount / 2 - 1).toString());
-                }
-
-                while (list.childElementCount / 2 < data.length) {
-                    addLabel((list.childElementCount / 2).toString());
-                }
-
-                for (let i = 0; i < data.length; i++) {
-                    render_drone(data[i], (i).toString());
-                }
-            }
-            setTimeout(update, 1000 / freq);
-        });
+function get_telemetry() {
+    let request = new XMLHttpRequest();
+    request.open('GET', '/get', false);
+    request.send();
+    if (request.status === 200) {
+        return JSON.parse(request.responseText)["drones"];
+    } else {
+        return null;
+    }
 }
 
+async function update() {
+    let data = get_telemetry();
+    let list = document.getElementById("drones-list");
+    if (data !== null) {
+        curr_telemetry = data;
+        drawDrones();
+        while (list.childElementCount / 2 > data.length) {
+            removeLabel((list.childElementCount / 2 - 1).toString());
+        }
 
-update();
+        while (list.childElementCount / 2 < data.length) {
+            addLabel((list.childElementCount / 2).toString());
+        }
+
+        for (let i = 0; i < data.length; i++) {
+            render_drone(data[i], (i).toString());
+        }
+    }
+}
 
 function render_drone(el, id) {
     if (el.status === "land") {
