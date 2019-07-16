@@ -242,6 +242,7 @@ def ask_taxi(request):
     else:
         nearest_copter.busy_points += [str(data['t']) + '0']
     nearest_copter.path += build_path(str(data['o']) + '0', str(data['t']) + '0')
+    print(nearest_copter.ip, 'build path path is', nearest_copter.path)
     r = lambda: random.randint(0, 255)
     nearest_copter.led = '#%02X%02X%02X' % (r(), r(), r())
 

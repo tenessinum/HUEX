@@ -96,7 +96,7 @@ class Clever:
                     }
                 self.status = 'fly'
                 n = int(self.path[0][:-1])
-                    # print('My path is now', self.path)
+                # print('My path is now', self.path)
                 nav_point = file_data['points'][n]
                 nav_point['z'] = 1.5
 
@@ -106,22 +106,19 @@ class Clever:
                     nav_point['z'] = 2.5
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
                 collisions = check_collisions(self, copters)
-                '''if not collisions:
-                    print(self.ip, 'Collis is ok')
-                else:
-                    print(self.ip, 'Collis is bad')'''
+                if dist < threshold:
+                    if not collisions:
+                        print(self.ip, 'distance reached,', 'Collis is ok')
+                    else:
+                        print(self.ip, 'distance reached,', 'Collis is bad')
                 if (dist < threshold) and (not collisions):
-                    print(self.ip, collisions, 'giving new point')
-                    try:
-                        old_point = file_data['points'][int(self.path[0][:-1])]
-                        self.last_point = self.path.pop(0)
-                        new_point = file_data['points'][int(self.path[0][:-1])]
-                        self.yaw = get_angle(old_point, new_point)
-                    except:
-                        pass
-                    return self.toNewTelem(copters)
-
+                    print(self.ip, 'Giving new point', self.path.pop(0))
+                    # self.path.pop(0)
+                    return self.toNewTelem()
                 else:
+                    if collisions:
+                        print(self.ip, 'NOT giving point because of collisions')
+
                     return {
                         "led": self.led,
                         "status": 'fly',  # fly, land
@@ -135,46 +132,43 @@ class Clever:
 def check_collisions(c, copters):
     # print(c.ip)
     paths = []
-    '''for i in copters:
-        if i != c and i.status != 'land':
-            try:
-                paths.append(i.path[0])
-            except:
-                pass
-            try:
-                if i.last_point != -1 and i.status == 'fly':
-                    paths.append(i.last_point)
-            except:
-                pass'''
 
-    for i in copters:
-        if i.ip != c.ip:
-            if i.status != 'land':
+    print(c.ip, 'Checking drone for collisions')
+
+    for copter in copters:
+        if copter.ip != c.ip:
+            if copter.status != 'land':
                 try:
-                    # print(i.ip, i.last_point, i.path)
-                    if i.last_point != -1:
-                        paths.append(i.last_point)
-                    paths.append(i.path[0])
+                    print(copter.ip, 'last point and path are', copter.last_point, copter.path)
+                    if copter.last_point != -1:
+                        paths.append(copter.last_point)
+                except:
+                    pass
+                try:
+                    paths.append(copter.path[0])
                 except:
                     pass
 
-    # print('Enemies are going to', paths, 'And i go to', c.path[0])
+    print(c.ip, 'Busy points are', *paths)
+
     try:
         fact = c.path[1] in paths
-        print(c.ip, 'I am flying to', c.path[1], 'and my enemies are flying to', paths)
+        print(c.ip, 'I am flying to', c.path[0], 'next point is', c.path[1], 'and my enemies are flying to', paths,
+              'fact is', fact)
     except:
         fact = False
 
     if fact:
-        print(c.ip, "Some collisions!!!")
+        pass
+        print(c.ip, "I am going to crush into someone")
     else:
-        # print("Everything is ok, but let me check")
-        for i in copters:
+        print(c.ip, "Everything is ok")
+        '''for i in copters:
             if i != c:
                 if get_d(c, i) < dangerous_threshold:
                     if get_d_to_point(i, i.path[0]) < get_d_to_point(c, c.path[0]):
                         c.force_landed = True
-                        i.force_landed = True
+                        i.force_landed = True'''
 
     return fact
 
