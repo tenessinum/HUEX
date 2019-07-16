@@ -1,39 +1,501 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>HUEX Mobile</title>
-    <script>let arr = {{ array }};</script>
-    <link rel="stylesheet" href="/static/mobile.css">
-    <link rel='stylesheet' href='/static/spectrum.css'/>
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/ico/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/static/ico/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/static/ico/favicon-16x16.png">
-    <link rel="manifest" href="/static/ico/site.webmanifest">
-    <link rel="mask-icon" href="/static/ico/safari-pinned-tab.svg" color="#5bbad5">
-    <link rel="shortcut icon" href="/static/ico/favicon.ico">
-    <meta name="msapplication-TileColor" content="#00aba9">
-    <meta name="msapplication-config" content="/static/ico/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="/static/materialize/materialize.min.css" media="screen,projection"/>
+    <script type="text/javascript"
+            src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=6e0c50d8-b2ec-4507-b180-d418767b28f5"></script>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <style>
+        html, body, .map, .end {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav .brand-logo.center {
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+
+        .preloader-wrapper.big {
+            width: 25vmin;
+            height: 25vmin;
+        }
+
+        .loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+        }
+    </style>
 </head>
+
 <body>
-<div class="mcontainer">
-    <div class="list">
-        <div class="block">
-            <h1 id="name" style="margin-bottom: 50px;">Выберите точку отправления</h1>
-            <div class="holder">
-                {% for i in array %}
-                    <h1 id="{{ i }}el" onclick="next({{ i }})" class="el">{{ i }}</h1>
-                {% endfor %}
+
+<div style="position:absolute; z-index: 10; width: 100%">
+    <nav style="background-color: #000000">
+        <div class="nav-wrapper">
+            <img class="brand-logo center" src="/static/logo.svg?v=20" height="50px">
+        </div>
+    </nav>
+    <div class="card-panel">
+        <h5 class="center-align" id="askFrom">Выберите точку отправления на карте или <a class="modal-trigger"
+                                                                                         href="#from">из списка</a></h5>
+        <h5 class="center-align" id="askTo" style="display: none;">Выберите точку прибытия на карте или <a
+                class="modal-trigger" href="#to">из списка</a></h5>
+    </div>
+</div>
+
+<div id="map" class="map"></div>
+<div class="end" id="end" style="top:0; position:absolute; z-index: 20000; background-color: #ffffff; display: none">
+    <table style="height: 100%; border-collapse: unset;">
+        <tr>
+            <td style="vertical-align: middle; text-align: center"><h3 id="loaderText"></h3></td>
+        </tr>
+    </table>
+
+    <div class="preloader-wrapper big active loader" id="loader">
+        <div class="spinner-layer spinner-blue">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+
+        <div class="spinner-layer spinner-red">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+
+        <div class="spinner-layer spinner-yellow">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+
+        <div class="spinner-layer spinner-green">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
             </div>
         </div>
     </div>
-
-    <div id="butt" class="block next_butt">
-        <div class="container">
-            <p id="text">Поехали!</p></div>
-    </div>
 </div>
-<script src="/static/mobile.js"></script>
+
+
+<!-- Modal Structure -->
+<div id="from" class="modal bottom-sheet">
+    <div class="modal-content">
+        <h4>Откуда летим?</h4>
+        <div class="collection">
+            {% for i in array %}
+                <a href="#!" class="collection-item modal-close" id="from{{ i }}"
+                   onclick="fromSel(this, {{ i }})">{{ i }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    <!--<div class="modal-footer">-->
+    <!--<a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>-->
+    <!--</div>-->
+</div>
+
+<div id="to" class="modal bottom-sheet">
+    <div class="modal-content">
+        <h4>Куда летим?</h4>
+        <div class="collection">
+            {% for i in array %}
+                <a href="#!" class="collection-item modal-close" id="to{{ i }}"
+                   onclick="toSel(this, {{ i }})">{{ i }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    <!--<div class="modal-footer">-->
+    <!--<a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>-->
+    <!--</div>-->
+</div>
+
+<div id="final" class="modal modalnd bottom-sheet">
+    <div class="modal-content">
+        <div class="row">
+            <div class="input-field col s12 l6" onclick="fromChange(); return false;">
+                <i class="material-icons prefix">flight_takeoff</i>
+                <input id="finalFrom" type="text" class="" disabled>
+                <label for="finalFrom">Откуда</label>
+            </div>
+            <div class="input-field col s12 l6" onclick="toChange(); return false;">
+                <i class="material-icons prefix">flight_land</i>
+                <input id="finalTo" type="text" class="" disabled>
+                <label for="finalTo">Куда</label>
+            </div>
+        </div>
+
+        <div class="progress" id="progress">
+            <div class="indeterminate"></div>
+        </div>
+
+        <div class="row" id="flightInfo">
+            <div class="col s6">
+                <span>Расстояние: </span><span id="dist"></span>
+            </div>
+            <div class="col s6">
+                <span>Стоимость: </span><span id="cost"></span>
+            </div>
+
+            <div class="col s12">
+                <a class="waves-effect waves-light btn" style="width: 100%" onclick="order()">Полетели!</a>
+            </div>
+        </div>
+    </div>
+    <!--<div class="modal-footer">-->
+    <!--<a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>-->
+    <!--</div>-->
+</div>
+
+<!--JavaScript at end of body for optimized loading-->
+<script type="text/javascript" src="/static/materialize/materialize.min.js"></script>
+
+<script>
+    let coords = {{ coords|safe }};
+    console.log(coords);
+    for (var i = 0, l = coords.length; i < l; i++) {
+        coords[i] = coords[i].reverse()
+    }
+    var map;
+    ymaps.ready(function () {
+
+        var LAYER_NAME = 'user#layer',
+            MAP_TYPE_NAME = 'user#customMap',
+            // Директория с тайлами.
+            TILES_PATH = 'https://sandbox.api.maps.yandex.net/examples/ru/2.1/custom_map/images/tiles',
+            /* Для того чтобы вычислить координаты левого нижнего и правого верхнего углов прямоугольной координатной
+             * области, нам необходимо знать максимальный зум, ширину и высоту изображения в пикселях на максимальном зуме.
+             */
+            MAX_ZOOM = 5,
+            PIC_WIDTH = 10,
+            PIC_HEIGHT = 10;
+
+        /**
+         * Конструктор, создающий собственный слой.
+         */
+        var Layer = function () {
+            var layer = new ymaps.Layer('', {
+                // Если есть необходимость показать собственное изображение в местах неподгрузившихся тайлов,
+                // раскомментируйте эту строчку и укажите ссылку на изображение.
+                // notFoundTile: 'url'
+            });
+            // Указываем доступный диапазон масштабов для данного слоя.
+            layer.getZoomRange = function () {
+                return ymaps.vow.resolve([0, 20]);
+            };
+            // Добавляем свои копирайты.
+            layer.getCopyrights = function () {
+                return ymaps.vow.resolve('© Human Express');
+            };
+            return layer;
+        };
+        // Добавляем в хранилище слоев свой конструктор.
+        ymaps.layer.storage.add(LAYER_NAME, Layer);
+
+        /**
+         * Создадим новый тип карты.
+         * MAP_TYPE_NAME - имя нового типа.
+         * LAYER_NAME - ключ в хранилище слоев или функция конструктор.
+         */
+        var mapType = new ymaps.MapType(MAP_TYPE_NAME, [LAYER_NAME]);
+        // Сохраняем тип в хранилище типов.
+        ymaps.mapType.storage.add(MAP_TYPE_NAME, mapType);
+
+        // Вычисляем размер всех тайлов на максимальном зуме.
+        var worldSize = Math.pow(2, MAX_ZOOM) * 256;
+        /**
+         * Создаем карту, указав свой новый тип карты.
+         */
+        map = new ymaps.Map('map', {
+            center: [2.5, 1.5],
+            zoom: 11,
+            controls: [/*'zoomControl'*/],
+            type: MAP_TYPE_NAME
+        }, {
+
+            // Задаем в качестве проекции Декартову. При данном расчёте центр изображения будет лежать в координатах [0, 0].
+            projection: new ymaps.projection.Cartesian([[PIC_HEIGHT / 2 - worldSize, -PIC_WIDTH / 2], [PIC_HEIGHT / 2, worldSize - PIC_WIDTH / 2]], [false, false]),
+            // Устанавливаем область просмотра карты так, чтобы пользователь не смог выйти за пределы изображения.
+            {#restrictMapArea: [[-PIC_HEIGHT / 2, -PIC_WIDTH / 2], [PIC_HEIGHT / 2, PIC_WIDTH / 2]]#}
+
+            // При данном расчёте, в координатах [0, 0] будет находиться левый нижний угол изображения,
+            // правый верхний будет находиться в координатах [PIC_HEIGHT, PIC_WIDTH].
+            // projection: new ymaps.projection.Cartesian([[PIC_HEIGHT - worldSize, 0], [PIC_HEIGHT, worldSize]], [false, false]),
+            // restrictMapArea: [[0, 0], [PIC_HEIGHT, PIC_WIDTH]]
+        });
+
+
+        addPoints()
+    });
+
+
+    var fr = -1;
+    var to = -1;
+
+    function addPoints() {
+        var availCollection = new ymaps.GeoObjectCollection(null, {
+            preset: 'islands#greenIcon'
+        });
+        var naCollection = new ymaps.GeoObjectCollection(null, {
+            preset: 'islands#redIcon'
+        });
+        for (var i = 0, l = coords.length; i < l; i++) {
+            if (i !== fr && i !== to) {
+                availCollection.add(new ymaps.Placemark(coords[i], {iconContent: i}));
+            } else {
+                naCollection.add(new ymaps.Placemark(coords[i], {iconContent: i}));
+            }
+        }
+        availCollection.events.add('click', function (e) {
+            mapSel(e.get('target').properties.get('iconContent'))
+        });
+
+        map.geoObjects.add(availCollection);
+        map.geoObjects.add(naCollection);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var dismissible = document.querySelectorAll('.modal');
+        M.Modal.init(dismissible/*, {'dismissible': false}*/);
+        var notDismissible = document.querySelectorAll('.modalnd');
+        M.Modal.init(notDismissible, {'dismissible': false});
+    });
+
+    function sleep(ms) {
+        ms += new Date().getTime();
+        while (new Date() < ms) {
+        }
+    }
+
+    function finalPanel() {
+        document.getElementById("finalFrom").value = fr.toString();
+        M.updateTextFields();
+
+        document.getElementById("finalTo").value = to.toString();
+        M.updateTextFields();
+
+        document.getElementById("progress").style.display = '';
+        document.getElementById("flightInfo").style.display = 'none';
+
+        var instance = M.Modal.getInstance(document.getElementById('final'));
+        instance.open();
+
+
+        fetch('/get_dist?o=' + fr.toString() + '&t=' + to.toString())
+            .then(
+                function (response) {
+                    if (response.status === 200) {
+                        response.json().then(function (resp) {
+                            console.log(resp);
+                            {#document.getElementById('butt').style.backgroundColor = '#aba72d';#}
+                            document.getElementById('dist').innerHTML = (Math.round(resp.dist * 100) / 100).toString() + ' м';
+                            document.getElementById('cost').innerHTML = (Math.round(resp.cost * 100) / 100).toString() + ' ₽';
+                            document.getElementById("progress").style.display = 'none';
+                            document.getElementById("flightInfo").style.display = '';
+                        });
+                    }
+                }
+            )
+            .catch(function (err) {
+                console.log('Fetch Error :-S', err);
+            });
+
+
+        /*let req = new XMLHttpRequest();
+        req.open('GET', '/get_dist?o=' + fr.toString() + '&t=' + to.toString(), true);
+        req.send(null);
+
+        req.onreadystatechange = function () { // (3)
+            if (req.readyState != 4) return;
+
+            button.innerHTML = 'Готово!';
+
+            if (req.status != 200) {
+                alert(req.status + ': ' + req.statusText);
+            } else {
+                alert(xhr.responseText);
+            }
+
+        }
+
+        if (req.status === 200) {
+            let resp = JSON.parse(req.responseText);
+            console.log(resp);
+
+
+
+
+
+
+        {#document.getElementById('butt').style.backgroundColor = '#aba72d';#}
+            document.getElementById('dist').innerHTML = (Math.round(resp.dist * 100) / 100).toString() + ' м';
+            document.getElementById('cost').innerHTML = (Math.round(resp.cost * 100) / 100).toString() + ' ₽';
+        }*/
+    }
+
+
+    function mapSel(point) {
+        if (fr !== -1) toSel(false, point);
+        else fromSel(false, point)
+    }
+
+    function fromSel(button, point) {
+        {#alert(point);#}
+
+        fr = point;
+
+        if (to === -1) {
+            document.getElementById("askTo").style.display = '';
+            document.getElementById("askFrom").style.display = 'none';
+            document.getElementById("to" + point.toString()).style.display = 'none';
+        } else {
+            document.getElementById("askTo").style.display = 'none';
+            document.getElementById("askFrom").style.display = 'none';
+            finalPanel()
+        }
+
+        map.geoObjects.removeAll();
+        addPoints();
+
+        return false;
+    }
+
+    function toSel(button, point) {
+        {#alert(point);#}
+        document.getElementById("askTo").style.display = 'none';
+        to = point;
+        console.log(fr, to);
+
+        map.geoObjects.removeAll();
+        addPoints();
+
+        finalPanel();
+
+        return false
+    }
+
+
+    function fromChange() {
+        fr = -1;
+        map.geoObjects.removeAll();
+        addPoints();
+
+        var instance = M.Modal.getInstance(document.getElementById('final'));
+        instance.close();
+
+        document.getElementById("askTo").style.display = 'none';
+        document.getElementById("askFrom").style.display = '';
+
+        for (var i = 0, l = coords.length; i < l; i++) {
+            document.getElementById("from" + i.toString()).style.display = '';
+        }
+        document.getElementById("from" + to.toString()).style.display = 'none';
+    }
+
+    function toChange() {
+        to = -1;
+        map.geoObjects.removeAll();
+        addPoints();
+
+        var instance = M.Modal.getInstance(document.getElementById('final'));
+        instance.close();
+
+        document.getElementById("askTo").style.display = '';
+        document.getElementById("askFrom").style.display = 'none';
+
+        for (var i = 0, l = coords.length; i < l; i++) {
+            document.getElementById("to" + i.toString()).style.display = '';
+        }
+        document.getElementById("to" + fr.toString()).style.display = 'none';
+    }
+
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    function order() {
+        document.getElementById('end').style.display = '';
+        fetch('/ask_taxi?o=' + fr.toString() + '&t=' + to.toString())
+            .then(
+                function (response) {
+                    if (response.status === 200) {
+                        response.json().then(function (resp) {
+                            console.log(resp);
+                            if (resp.m === 'busy') {
+                                var color = hexToRgb('#ff0000');
+                                var gray = (color.r + color.g + color.b + 1) / 3;
+                                if (gray > 127) document.getElementById('loaderText').style.color = '#000000';
+                                else document.getElementById('loaderText').style.color = '#FFFFFF';
+
+                                document.getElementById('end').style.backgroundColor = '#ff0000';
+                                document.getElementById('loader').style.display = 'none';
+                                document.getElementById('loaderText').innerHTML = 'Всё занято, попробуйте позже :(';
+                                document.getElementById('loaderText').style.display = '';
+                            } else {
+                                var color = hexToRgb(resp.color);
+                                var gray = (color.r + color.g + color.b + 1) / 3;
+                                if (gray > 127) document.getElementById('loaderText').style.color = '#000000';
+                                else document.getElementById('loaderText').style.color = '#FFFFFF';
+
+                                document.getElementById('end').style.backgroundColor = resp.color;
+                                document.getElementById('loader').style.display = 'none';
+                                document.getElementById('loaderText').innerHTML = 'Летим!';
+                                document.getElementById('loaderText').style.display = '';
+                            }
+                        });
+                    }
+                }
+            )
+            .catch(function (err) {
+                console.log('Fetch Error :-S', err);
+            });
+    }
+</script>
+
 </body>
 </html>

@@ -31,6 +31,7 @@ def mobile(request):
     with open('static/roads.json', 'r') as f:
         file = load(f)
         data['array'] = [i for i in range(0, len(file['points']))]
+        data['coords'] = [list(e.values()) for e in file['points']]
     return render(request, "mobile.html", data)
 
 
