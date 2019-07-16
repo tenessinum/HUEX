@@ -47,17 +47,17 @@ def post_telemetry(request):
     if not get_client_ip(request) in [i.ip for i in copters]:
         copters.append(Clever(ip))
 
-    for i in copters:
-        if i.ip == ip:
-            i.x = float(request.GET.get("x"))
-            i.y = float(request.GET.get("y"))
-            i.z = float(request.GET.get("z"))
+    for copter in copters:
+        if copter.ip == ip:
+            copter.x = float(request.GET.get("x"))
+            copter.y = float(request.GET.get("y"))
+            copter.z = float(request.GET.get("z"))
             # i.yaw = float(request.GET.get("yaw"))
             if str(float(request.GET.get("cell_voltage"))) == 'nan':
-                i.voltage = 0
+                copter.voltage = 0
             else:
-                i.voltage = float(request.GET.get("cell_voltage"))
-            return JsonResponse(i.toNewTelem(copters))
+                copter.voltage = float(request.GET.get("cell_voltage"))
+            return JsonResponse(copter.toNewTelem(copters))
 
 
 def get_info(request):
@@ -242,7 +242,7 @@ def ask_taxi(request):
     r = lambda: random.randint(0, 255)
     nearest_copter.led = '#%02X%02X%02X' % (r(), r(), r())
 
-    return JsonResponse({'m': 'ok', 'color': nearest_copter.led})
+    return JsonResponse({'m': 'ok', 'color': nearest_copter.led, 'ip': nearest_copter.ip})
 
 
 def get_nearest_point(c):
@@ -274,3 +274,13 @@ def get_busy_points(request):
                 pass
 
     return JsonResponse({'busy': arr})
+
+
+def ip_status(request):
+    ip = request.GET.get('ip')
+
+    for copter in copters:
+        if copter.ip == ip:
+            return JsonResponse({"status": copter.status()})
+
+    return JsonResponse({"status": 'wrong'})
