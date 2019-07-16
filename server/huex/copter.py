@@ -2,7 +2,7 @@ import random
 from json import load
 from math import atan2, pi
 
-threshold = 0.25  # meters
+threshold = 0.2  # meters
 dangerous_threshold = 0.3
 
 
@@ -110,7 +110,7 @@ class Clever:
                     self.last_point = self.path.pop(0)
                     return self.toNewTelem(copters)
                 else:
-                    print(self.ip, 'dist to point is', dist)
+                    # print(self.ip, 'dist to point is', dist)
                     return {
                         "led": self.led,
                         "status": 'fly',  # fly, land
