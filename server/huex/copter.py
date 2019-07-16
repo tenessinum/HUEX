@@ -2,7 +2,7 @@ import random
 from json import load
 from math import atan2, pi
 
-threshold = 0.2  # meters
+threshold = 0.25  # meters
 dangerous_threshold = 0.3
 
 
@@ -44,7 +44,7 @@ class Clever:
             }
         }
 
-    def toTelem(self):
+    def toTelem(self, copters=[]):
         return {
             "ip": self.ip,
             "led": self.led,
@@ -54,7 +54,7 @@ class Clever:
                 "yaw": self.yaw
             },
             "voltage": self.voltage,
-            "nextp": self.toNewTelem()
+            "nextp": self.toNewTelem(copters)
         }
 
     def toNewTelem(self, copters=[]):
@@ -84,7 +84,7 @@ class Clever:
                 file_data = load(f)
 
                 if self.path[0] == '-1':
-                    self.path.pop(0)
+                    self.last_point = self.path.pop(0)
                     self.status = 'land'
                     return {
                         "led": self.led,
@@ -106,19 +106,11 @@ class Clever:
                     nav_point['z'] = 2.5
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
                 collisions = check_collisions(self, copters)
-                if dist < threshold:
-                    if not collisions:
-                        print(self.ip, 'distance reached,', 'Collis is ok')
-                    else:
-                        print(self.ip, 'distance reached,', 'Collis is bad')
                 if (dist < threshold) and (not collisions):
-                    print(self.ip, 'Giving new point', self.path.pop(0))
-                    # self.path.pop(0)
-                    return self.toNewTelem()
+                    self.last_point = self.path.pop(0)
+                    return self.toNewTelem(copters)
                 else:
-                    if collisions:
-                        print(self.ip, 'NOT giving point because of collisions')
-
+                    print(self.ip, 'dist to point is', dist)
                     return {
                         "led": self.led,
                         "status": 'fly',  # fly, land
@@ -133,13 +125,14 @@ def check_collisions(c, copters):
     # print(c.ip)
     paths = []
 
-    print(c.ip, 'Checking drone for collisions')
+    # print(c.ip, 'Checking drone for collisions', copters)
 
     for copter in copters:
         if copter.ip != c.ip:
+            # print(copter.ip, 'status is', copter.status)
             if copter.status != 'land':
                 try:
-                    print(copter.ip, 'last point and path are', copter.last_point, copter.path)
+                    # print(copter.ip, 'last point and path are', copter.last_point, copter.path)
                     if copter.last_point != -1:
                         paths.append(copter.last_point)
                 except:
@@ -149,21 +142,20 @@ def check_collisions(c, copters):
                 except:
                     pass
 
-    print(c.ip, 'Busy points are', *paths)
+    # print(c.ip, 'Busy points are', *paths)
 
     try:
         fact = c.path[1] in paths
-        print(c.ip, 'I am flying to', c.path[0], 'next point is', c.path[1], 'and my enemies are flying to', paths,
-              'fact is', fact)
+        # (c.ip, 'I am flying to', c.path[0], 'next point is', c.path[1], 'and my enemies are flying to', paths, 'fact is', fact)
     except:
         fact = False
 
-    if fact:
+    '''if fact:
         pass
         print(c.ip, "I am going to crush into someone")
     else:
         print(c.ip, "Everything is ok")
-        '''for i in copters:
+        for i in copters:
             if i != c:
                 if get_d(c, i) < dangerous_threshold:
                     if get_d_to_point(i, i.path[0]) < get_d_to_point(c, c.path[0]):
