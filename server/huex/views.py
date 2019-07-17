@@ -8,10 +8,10 @@ from huex.graphs import build_path, renew, printttt
 import logging
 
 allowed_ips = ['127.0.0.1', '192.168.1.206', '192.168.1.123', '192.168.1.168', '192.168.1.149', '192.168.1.65']
+copters = [Clever('0.0.0.0')]
+nearest_copter_threshold = 0.3
 
 logging.disable(logging.CRITICAL)
-
-copters = []
 
 
 def main(request):
@@ -221,6 +221,15 @@ def ask_taxi(request):
     if str(data['o']) + '0' in busy_points or str(data['t']) + '0' in busy_points:
         return JsonResponse({'m': 'wrong'})
 
+    with open('static/roads.json', 'r') as f:
+        destination_point = load(f)['points'][int(data['t'])]
+
+    for copter in copters:
+        if copter.status == 'land':
+            if get_distance(copter.x, copter.y, 0, destination_point['x'], destination_point['y'],
+                            0) < nearest_copter_threshold:
+                return JsonResponse({'m': 'wrong'})
+
     paths = []
     for i in range(0, len(points)):
         if points[i] != -1:
@@ -228,7 +237,6 @@ def ask_taxi(request):
         else:
             paths.append(9999999)
 
-    # print(paths, min(paths))
     nearest_copter = copters[paths.index(min(paths))]
     first_path = build_path(str(get_nearest_point(nearest_copter)) + '0', str(data['o']) + '0')
     if len(first_path) != 1:
