@@ -238,7 +238,6 @@ def ask_taxi(request):
     else:
         nearest_copter.busy_points += [str(data['t']) + '0']
     nearest_copter.path += build_path(str(data['o']) + '0', str(data['t']) + '0')
-    print(nearest_copter.ip, 'build path path is', nearest_copter.path)
     r = lambda: random.randint(0, 255)
     nearest_copter.led = '#%02X%02X%02X' % (r(), r(), r())
 
@@ -281,6 +280,8 @@ def ip_status(request):
 
     for copter in copters:
         if copter.ip == ip:
-            return JsonResponse({"status": copter.status()})
+            status = copter.get_status()
+            print(status)
+            return JsonResponse({"status": copter.get_status()})
 
     return JsonResponse({"status": 'wrong'})

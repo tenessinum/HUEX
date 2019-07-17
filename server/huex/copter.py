@@ -85,6 +85,7 @@ class Clever:
 
                 if self.path[0] == '-1':
                     self.last_point = self.path.pop(0)
+                    self.busy_points.pop()
                     self.status = 'land'
                     return {
                         "led": self.led,
@@ -120,8 +121,9 @@ class Clever:
                         }
                     }
 
-    def status(self):
-        if not self.busy_points:
+    def get_status(self):
+        print(self.busy_points, self.status)
+        if len(self.busy_points) <= 1:
             if self.status == 'fly':
                 return 'flight_to_dest'
             elif self.status == 'land':
