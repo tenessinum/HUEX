@@ -1,6 +1,7 @@
 var map;
 var fr = -1;
 var to = -1;
+var oldStatus = "";
 
 function addPoints() {
     var availCollection = new ymaps.GeoObjectCollection(null, {
@@ -208,18 +209,28 @@ function check(ip) {
                             alert('Хрен тебе )')
                         } else {
                             if (resp.status === 'flight_to_dest')
-                                document.getElementById('loaderText').innerHTML = "Летим к месту прибытия";
+                                if (oldStatus === 'flight_to_human') {
+                                    document.getElementById('loaderText').innerHTML = "Ожидаем человека в месте отправления";
+                                    setTimeout(check, 2000, ip);
+                                } else {
+                                    document.getElementById('loaderText').innerHTML = "Летим к месту прибытия";
+                                    setTimeout(check, 500, ip);
+                                }
                             else if (resp.status === 'landed') {
                                 document.getElementById('loaderText').innerHTML = "Полет завершен. Спасибо за заказ!";
                                 setTimeout(function () {
                                     window.location.reload(false)
                                 }, 1000);
                                 return;
-                            } else if (resp.status === 'flight_to_human')
+                            } else if (resp.status === 'flight_to_human') {
                                 document.getElementById('loaderText').innerHTML = "Летим к месту отправления";
-                            else if (resp.status === 'human_wait')
+                                setTimeout(check, 500, ip);
+                            } else if (resp.status === 'human_wait') {
                                 document.getElementById('loaderText').innerHTML = "Ожидаем человека в месте отправления";
-                            setTimeout(check, 500, ip)
+                                setTimeout(check, 2000, ip);
+                            }
+                            setTimeout(check, 500, ip);
+                            oldStatus = resp.status;
                         }
                     });
                 }
