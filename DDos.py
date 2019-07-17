@@ -2,7 +2,7 @@ import requests as r
 import random
 import time
 
-static_path = 'http://192.168.1.206:8000'
+static_path = 'http://192.168.1.149:8000'
 
 data = r.get(static_path + '/static/roads.json')
 
