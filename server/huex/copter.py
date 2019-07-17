@@ -122,16 +122,15 @@ class Clever:
                     }
 
     def get_status(self):
-        print(self.busy_points, self.status)
-        if len(self.busy_points) <= 1:
+        if 0 < len(self.busy_points) <= 1:
             if self.status == 'fly':
                 return 'flight_to_dest'
             elif self.status == 'land':
-                return 'landed'
+                return 'human_wait'
         elif len(self.busy_points) == 2:
             return 'flight_to_human'
         else:
-            return 'human_wait'
+            return 'landed'
 
 
 def check_collisions(c, copters):

@@ -280,8 +280,6 @@ def ip_status(request):
 
     for copter in copters:
         if copter.ip == ip:
-            status = copter.get_status()
-            print(status)
             return JsonResponse({"status": copter.get_status()})
 
     return JsonResponse({"status": 'wrong'})
