@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from huex.copter import Clever
+from huex.copter import Clever, get_distance, threshold
 import random
 from json import load, dump
 from huex.graphs import build_path, renew, printttt
@@ -11,8 +11,7 @@ allowed_ips = ['127.0.0.1', '192.168.1.206', '192.168.1.123', '192.168.1.168', '
 copters = []
 nearest_copter_threshold = 0.3
 
-
-# logging.disable(logging.CRITICAL)
+logging.disable(logging.CRITICAL)
 
 
 def main(request):
@@ -171,10 +170,6 @@ def get_dist(request):
     return JsonResponse({'dist': dist, 'cost': cost})
 
 
-def get_distance(x1, y1, z1, x2, y2, z2):
-    return ((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2) ** 0.5
-
-
 def calc_path(path):
     dist = 0
     with open('static/roads.json', 'r') as f:
@@ -268,16 +263,28 @@ def get_nearest_point(c):
 
 def get_busy_points(request):
     arr = []
-
-    for i in copters:
-        if i.status != 'land':
+    with open('static/roads.json', 'r') as f:
+        file_data = load(f)
+    for copter in copters:
+        if copter.status != 'land':
             try:
-                if i.last_point != -1:
-                    arr.append(int(i.last_point[:-1]))
+                if copter.last_point != -1:
+                    n = int(copter.path[0][:-1])
+                    # print('My path is now', self.path)
+                    nav_point = file_data['points'][n]
+                    nav_point['z'] = 1.5
+
+                    if copter.path[0][-1:] == '0':
+                        nav_point['z'] = 1.5
+                    elif copter.path[0][-1:] == '1':
+                        nav_point['z'] = 2.5
+                    dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], copter.x, copter.y, copter.z)
+                    if dist > threshold:
+                        arr.append(int(copter.last_point[:-1]))
             except:
                 pass
             try:
-                arr.append(int(i.path[0][:-1]))
+                arr.append(int(copter.path[0][:-1]))
             except:
                 pass
 
