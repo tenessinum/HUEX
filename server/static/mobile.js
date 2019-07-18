@@ -211,7 +211,7 @@ function check(ip) {
                             if (resp.status === 'flight_to_dest')
                                 if (oldStatus === 'flight_to_human') {
                                     document.getElementById('loaderText').innerHTML = "Ожидаем человека в месте отправления";
-                                    setTimeout(check, 2000, ip);
+                                    setTimeout(check, 3000, ip);
                                 } else {
                                     document.getElementById('loaderText').innerHTML = "Летим к месту прибытия";
                                     setTimeout(check, 500, ip);
@@ -227,9 +227,9 @@ function check(ip) {
                                 setTimeout(check, 500, ip);
                             } else if (resp.status === 'human_wait') {
                                 document.getElementById('loaderText').innerHTML = "Ожидаем человека в месте отправления";
-                                setTimeout(check, 2000, ip);
+                                setTimeout(check, 3000, ip);
                             }
-                            setTimeout(check, 500, ip);
+
                             oldStatus = resp.status;
                         }
                     });
