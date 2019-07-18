@@ -279,7 +279,7 @@ def get_busy_points(request):
                     elif copter.path[0][-1:] == '1':
                         nav_point['z'] = 2.5
                     dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], copter.x, copter.y, copter.z)
-                    if dist > threshold:
+                    if dist < threshold:
                         arr.append(int(copter.last_point[:-1]))
             except:
                 pass
