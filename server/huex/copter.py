@@ -170,12 +170,14 @@ def check_collisions(c, copters):
     # print(c.ip, 'Busy points are', *paths)
 
     try:
-        fact = c.path[1] in paths
-        # (c.ip, 'I am flying to', c.path[0], 'next point is', c.path[1], 'and my enemies are flying to', paths, 'fact is', fact)
+        if c.status == 'land':
+            fact = c.path[0] in paths
+        else:
+            fact = c.path[1] in paths
     except:
         fact = False
 
-    '''if fact:
+    if fact:
         pass
         print(c.ip, "I am going to crush into someone")
     else:
@@ -185,7 +187,7 @@ def check_collisions(c, copters):
                 if get_d(c, i) < dangerous_threshold:
                     if get_d_to_point(i, i.path[0]) < get_d_to_point(c, c.path[0]):
                         c.force_landed = True
-                        i.force_landed = True'''
+                        i.force_landed = True
 
     return fact
 

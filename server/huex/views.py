@@ -270,7 +270,6 @@ def get_busy_points(request):
             try:
                 if copter.last_point != -1:
                     n = int(copter.path[0][:-1])
-                    # print('My path is now', self.path)
                     nav_point = file_data['points'][n]
                     nav_point['z'] = 1.5
 
