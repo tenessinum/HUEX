@@ -95,7 +95,6 @@ class Clever:
                             "yaw": self.yaw
                         }
                     }
-                self.status = 'fly'
                 n = int(self.path[0][:-1])
                 # print('My path is now', self.path)
                 nav_point = file_data['points'][n]
@@ -108,6 +107,7 @@ class Clever:
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
                 collisions = check_collisions(self, copters)
                 if (dist < threshold) and (not collisions):
+                    self.status = 'fly'
                     self.last_point = self.path.pop(0)
                     return self.toNewTelem(copters)
                 else:
