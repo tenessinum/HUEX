@@ -108,13 +108,16 @@ class Clever:
                 collisions = check_collisions(self, copters)
                 if (dist < threshold) and (not collisions):
                     self.status = 'fly'
-                    self.last_point = self.path.pop(0)
+                    try:
+                        self.last_point = self.path.pop(0)
+                    except:
+                        self.last_point = -1
                     return self.toNewTelem(copters)
                 else:
                     # print(self.ip, 'dist to point is', dist)
                     return {
                         "led": self.led,
-                        "status": 'fly',  # fly, land
+                        "status": self.status,  # fly, land
                         "pose": {
                             "x": nav_point['x'], "y": nav_point['y'], "z": nav_point['z'],
                             "yaw": self.yaw
