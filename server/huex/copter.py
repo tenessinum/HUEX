@@ -170,17 +170,12 @@ def check_collisions(c, copters):
     except:
         fact = False
 
-    if fact:
-        pass
-        print(c.ip, "I am going to crush into someone")
-    else:
-        print(c.ip, "Everything is ok")
-        for i in copters:
-            if i != c:
-                if get_d(c, i) < dangerous_threshold:
-                    if get_d_to_point(i, i.path[0]) < get_d_to_point(c, c.path[0]):
-                        c.force_landed = True
-                        i.force_landed = True
+    for i in copters:
+        if i != c:
+            if get_d(c, i) < dangerous_threshold:
+                if get_d_to_point(i, i.path[0]) < get_d_to_point(c, c.path[0]):
+                    c.force_landed = True
+                    i.force_landed = True
 
     return fact
 
