@@ -19,7 +19,7 @@ def main(request):
     if get_client_ip(request) in allowed_ips:
         return render(request, "main.html", data)
     else:
-        return redirect('https://github.com/Tennessium/HUEX')
+        return redirect('/m')
 
 
 def guest_page(request):
