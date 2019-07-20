@@ -89,7 +89,7 @@ class Clever:
                     self.status = 'land'
                     return {
                         "led": self.led,
-                        "status": 'land',
+                        "status": self.status,
                         "pose": {
                             "x": self.x, "y": self.y, "z": 1.5,
                             "yaw": self.yaw
@@ -114,7 +114,7 @@ class Clever:
                         self.last_point = -1
                     return self.toNewTelem(copters)
                 else:
-                    # print(self.ip, 'dist to point is', dist)
+                    self.status = 'fly'
                     return {
                         "led": self.led,
                         "status": self.status,  # fly, land
