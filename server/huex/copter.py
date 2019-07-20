@@ -44,7 +44,7 @@ class Clever:
             }
         }
 
-    def toTelem(self, copters=[]):
+    def toTelem(self, copters):
         return {
             "ip": self.ip,
             "led": self.led,
@@ -57,7 +57,7 @@ class Clever:
             "nextp": self.toNewTelem(copters)
         }
 
-    def toNewTelem(self, copters=[]):
+    def toNewTelem(self, copters):
         if self.force_landed:
             return {
                 "led": self.led,
