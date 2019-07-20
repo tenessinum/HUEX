@@ -70,7 +70,6 @@ class Clever:
         if not self.path:
             self.busy_points = []
             self.status = 'land'
-            print('copter status is now land')
             return {
                 "led": self.led,
                 "status": self.status,
@@ -87,7 +86,6 @@ class Clever:
                     self.last_point = self.path.pop(0)
                     self.busy_points.pop()
                     self.status = 'land'
-                    print('copter status is now land')
                     return {
                         "led": self.led,
                         "status": self.status,
@@ -97,7 +95,6 @@ class Clever:
                         }
                     }
                 n = int(self.path[0][:-1])
-                # print('My path is now', self.path)
                 nav_point = file_data['points'][n]
                 nav_point['z'] = 1.5
 
@@ -109,7 +106,6 @@ class Clever:
                 collisions = check_collisions(self, copters)
                 if not collisions:
                     self.status = 'fly'
-                    print('Status is fly')
                 if (dist < threshold) and (not collisions):
                     try:
                         self.last_point = self.path.pop(0)
@@ -118,7 +114,6 @@ class Clever:
                     return self.toNewTelem(copters)
                 else:
                     self.status = 'fly'
-                    print('copter status is now fly')
                     return {
                         "led": self.led,
                         "status": self.status,
