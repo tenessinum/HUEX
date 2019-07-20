@@ -67,8 +67,8 @@ def get_info(request):
     data["message"] = "OK"
     data["drones"] = []
 
-    for i in range(0, len(copters)):
-        data["drones"].append(copters[i].toTelem(copters))
+    for copter in copters:
+        data["drones"].append(copter.toTelem(copters))
 
     return JsonResponse(data)
 

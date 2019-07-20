@@ -69,11 +69,11 @@ class Clever:
             }
         if not self.path:
             self.busy_points = []
-            # print("Empty paths, return land")
             self.status = 'land'
+            print('copter status is now land')
             return {
                 "led": self.led,
-                "status": 'land',  # fly, land
+                "status": self.status,
                 "pose": {
                     "x": self.x, "y": self.y, "z": 1.5,
                     "yaw": self.yaw
@@ -87,6 +87,7 @@ class Clever:
                     self.last_point = self.path.pop(0)
                     self.busy_points.pop()
                     self.status = 'land'
+                    print('copter status is now land')
                     return {
                         "led": self.led,
                         "status": self.status,
@@ -106,8 +107,10 @@ class Clever:
                     nav_point['z'] = 2.5
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
                 collisions = check_collisions(self, copters)
-                if (dist < threshold) and (not collisions):
+                if not collisions:
                     self.status = 'fly'
+                    print('Status is fly')
+                if (dist < threshold) and (not collisions):
                     try:
                         self.last_point = self.path.pop(0)
                     except:
@@ -115,9 +118,10 @@ class Clever:
                     return self.toNewTelem(copters)
                 else:
                     self.status = 'fly'
+                    print('copter status is now fly')
                     return {
                         "led": self.led,
-                        "status": self.status,  # fly, land
+                        "status": self.status,
                         "pose": {
                             "x": nav_point['x'], "y": nav_point['y'], "z": nav_point['z'],
                             "yaw": self.yaw
