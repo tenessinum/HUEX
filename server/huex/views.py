@@ -269,7 +269,7 @@ def get_busy_points(request):
         if copter.status != 'land':
             try:
                 if copter.last_point != -1:
-                    '''n = int(copter.path[0][:-1])
+                    n = int(copter.path[0][:-1])
                     nav_point = file_data['points'][n]
                     nav_point['z'] = 1.5
 
@@ -278,8 +278,8 @@ def get_busy_points(request):
                     elif copter.path[0][-1:] == '1':
                         nav_point['z'] = 2.5
                     dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], copter.x, copter.y, copter.z)
-                    if dist < threshold:'''
-                    arr.append(int(copter.last_point[:-1]))
+                    if dist > threshold:
+                        arr.append(int(copter.last_point[:-1]))
             except:
                 pass
             try:

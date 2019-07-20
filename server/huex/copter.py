@@ -134,21 +134,16 @@ class Clever:
 
 
 def check_collisions(c, copters):
-    # print(c.ip)
     paths = []
     with open('static/roads.json', 'r') as f:
         file_data = load(f)
-    # print(c.ip, 'Checking drone for collisions', copters)
 
     for copter in copters:
         if copter.ip != c.ip:
-            # print(copter.ip, 'status is', copter.status)
             if copter.status != 'land':
                 try:
-                    # print(copter.ip, 'last point and path are', copter.last_point, copter.path)
                     if copter.last_point != -1:
-                        '''n = int(copter.path[0][:-1])
-                        # print('My path is now', self.path)
+                        n = int(copter.path[0][:-1])
                         nav_point = file_data['points'][n]
                         nav_point['z'] = 1.5
 
@@ -158,16 +153,14 @@ def check_collisions(c, copters):
                             nav_point['z'] = 2.5
                         dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], copter.x, copter.y,
                                             copter.z)
-                        if dist < threshold:'''
-                        paths.append(copter.last_point)
+                        if dist < threshold:
+                            paths.append(copter.last_point)
                 except:
                     pass
                 try:
                     paths.append(int(copter.path[0][:-1]))
                 except:
                     pass
-
-    # print(c.ip, 'Busy points are', *paths)
 
     try:
         if c.status == 'land':
