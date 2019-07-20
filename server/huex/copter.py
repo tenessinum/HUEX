@@ -154,11 +154,11 @@ def check_collisions(c, copters):
                         dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], copter.x, copter.y,
                                             copter.z)
                         if dist > threshold:
-                            paths.append(int(copter.last_point[:-1]))
+                            paths.append(copter.last_point)
                 except:
                     pass
                 try:
-                    paths.append(int(copter.path[0][:-1]))
+                    paths.append(copter.path[0])
                 except:
                     pass
 
