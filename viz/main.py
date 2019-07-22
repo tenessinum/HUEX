@@ -6,6 +6,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 ECHELON_HEIGHT = 1.5
+ECHELON_HEIGHT_2 = 2.5
 COPTER_IP = "192.168.1.103"
 
 
@@ -39,14 +40,14 @@ class Camera():
 
 
 def Grid(size):
-    z=0
+    z = 0
     glLineWidth(1)
     glColor3f(0.4, 0.4, 0.4)
     glBegin(GL_LINES)
-    for x in range(-9,10):
-        for y in range(-5,10):
-            x*=size
-            y*=size
+    for x in range(-9, 10):
+        for y in range(-5, 10):
+            x *= size
+            y *= size
             glVertex3f(x, y, z)
             glVertex3f(x + size, y, z)
 
@@ -63,7 +64,7 @@ def Grid(size):
 
 
 def Origin():
-    glColor3f(1.0, 1.0, 1.0)
+    glColor3f(0.4, 0.4, 0.4)
     glBegin(GL_LINES)
 
     glVertex3f(0, 0, 0)
@@ -77,9 +78,9 @@ def Origin():
     glEnd()
 
 
-def Cube(pose, size, color):
+def Cube(pose, size, color, width = 10):
     nx, ny, nz = pose
-    pitch, roll, yaw = 0,0,0
+    pitch, roll, yaw = 0, 0, 0
     rgb = []
     for val in (color[1:3], color[3:5], color[5:7]):
         val = int(val, 16)
@@ -93,7 +94,7 @@ def Cube(pose, size, color):
     glRotatef(roll, 0, 0, 1)
 
     glColor3f(rgb[0], rgb[1], rgb[2])
-    glLineWidth(10)
+    glLineWidth(width)
     glBegin(GL_LINES)
 
     glVertex3f(x, y, z)
@@ -182,8 +183,12 @@ def load_roads(path):
     return points, roads
 
 
-def Road(x1, y1, z1, x2, y2, z2):
-    glColor3f(1.0, 1.0, 1.0)
+def Road(x1, y1, z1, x2, y2, z2, color="#ffffff"):
+    rgb = []
+    for val in (color[1:3], color[3:5], color[5:7]):
+        val = int(val, 16)
+        rgb.append(val / 255)
+    glColor3f(rgb[0], rgb[1], rgb[2])
     glLineWidth(3)
     glBegin(GL_LINES)
     glVertex3f(x1, y1, z1)
@@ -198,6 +203,8 @@ def get_positions():
         data = [copter["pose"]]
         data.append(copter["led"])
         data.append(copter["status"])
+        data.append(copter["ip"])
+        data.append(copter["nextp"])
         poses.append(data)
     return poses
 
@@ -210,9 +217,8 @@ def main():
     gluPerspective(60, (display[0] / display[1]), 0.1, 50.0)
     glEnable(GL_DEPTH_TEST)
     points, roads = load_roads("roads.json")
-    print(points)
     markers = load_markers()
-    cam = Camera((0, 0, 3), (-90, 0, 0))
+    cam = Camera((5.1999999999999975, -0.1, 3.3000000000000003), (-57, -60, 0))
     cam.goto(-0.30000000000000004, -4.000000000000002, 3, -75, 0, 0)
     i = 0
     while True:
@@ -260,9 +266,10 @@ def main():
             Marker((x, y, 0.01), size)
 
         for point in points:
-            Cube((point['x'], point['y'],ECHELON_HEIGHT),0.05,"#ffffff")
+            Cube((point['x'], point['y'],ECHELON_HEIGHT),0.04,"#ffffff",5)
         for point in points:
-            Cube((point['x'], point['y'],ECHELON_HEIGHT+1),0.05,"#ffffff")
+            Cube((point['x'], point['y'],ECHELON_HEIGHT_2),0.04,"#ffffff",5)
+
 
         for road in roads:
             x1, y1, z1 = points[road["1"]]["x"], points[road["1"]]["y"], ECHELON_HEIGHT
@@ -272,14 +279,20 @@ def main():
             x1, y1, z1 = points[road["1"]]["x"], points[road["1"]]["y"], ECHELON_HEIGHT + 1
             x2, y2, z2 = points[road["2"]]["x"], points[road["2"]]["y"], ECHELON_HEIGHT + 1
             Road(x1, y1, z1, x2, y2, z2)
-
+        print("\n")
+        
         for pose in get_positions():
+            print(str(pose[3]) + ": " + str(pose[2]))
+
+
             if pose[2] == "fly":
-                Cube((pose[0]["x"],pose[0]["y"],pose[0]["z"]), 0.3,pose[1])
+                Cube((pose[0]["x"], pose[0]["y"], pose[0]["z"]), 0.3, pose[1])
+                Cube((pose[4]['pose']["x"], pose[4]['pose']["y"], pose[4]['pose']["z"]), 0.1, pose[1])
+                Road(pose[0]["x"], pose[0]["y"], pose[0]["z"], pose[4]['pose']["x"], pose[4]['pose']["y"],
+                     pose[4]['pose']["z"], pose[1])
             else:
                 Cube((pose[0]["x"], pose[0]["y"], 0), 0.3, pose[1])
-
-        #Cube((4, 4, 0, i, i, i), 0.3, "#ffffff")
+        
         Origin()
         Grid(1)
         i += 1
