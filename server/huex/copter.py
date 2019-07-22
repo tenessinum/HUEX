@@ -74,7 +74,7 @@ class Clever:
                 "led": self.led,
                 "status": self.status,
                 "pose": {
-                    "x": self.x, "y": self.y, "z": 1.5,
+                    "x": self.x, "y": self.y, "z": 2,
                     "yaw": self.yaw
                 }
             }
@@ -90,18 +90,18 @@ class Clever:
                         "led": self.led,
                         "status": self.status,
                         "pose": {
-                            "x": self.x, "y": self.y, "z": 1.5,
+                            "x": self.x, "y": self.y, "z": 2,
                             "yaw": self.yaw
                         }
                     }
                 n = int(self.path[0][:-1])
                 nav_point = file_data['points'][n]
-                nav_point['z'] = 1.5
+                nav_point['z'] = 2
 
                 if self.path[0][-1:] == '0':
-                    nav_point['z'] = 1.5
+                    nav_point['z'] = 2
                 elif self.path[0][-1:] == '1':
-                    nav_point['z'] = 2.5
+                    nav_point['z'] = 3.5
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
                 collisions = check_collisions(self, copters)
                 if not collisions:
@@ -147,12 +147,12 @@ def check_collisions(c, copters):
                     if copter.last_point != -1:
                         n = int(copter.path[0][:-1])
                         nav_point = file_data['points'][n]
-                        nav_point['z'] = 1.5
+                        nav_point['z'] = 2
 
                         if copter.path[0][-1:] == '0':
-                            nav_point['z'] = 1.5
+                            nav_point['z'] = 2
                         elif copter.path[0][-1:] == '1':
-                            nav_point['z'] = 2.5
+                            nav_point['z'] = 3.5
                         dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], copter.x, copter.y,
                                             copter.z)
                         if dist > threshold:
@@ -192,12 +192,12 @@ def get_d_to_point(c, p):
 
         n = int(p[:-1])
         nav_point = file_data['points'][n]
-        nav_point['z'] = 1.5
+        nav_point['z'] = 2
 
         if p[-1:] == '0':
-            nav_point['z'] = 1.5
+            nav_point['z'] = 2
         elif p[-1:] == '1':
-            nav_point['z'] = 2.5
+            nav_point['z'] = 3.5
 
         return get_distance(nav_point['x'], nav_point['y'], nav_point['z'], c.x, c.y, c.z)
 

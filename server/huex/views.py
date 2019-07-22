@@ -181,17 +181,17 @@ def calc_path(path):
             'y': data['points'][int(path[i][:-1])]['y'],
         }
         if path[i][-1] == 0:
-            p1['z'] = 1.5
+            p1['z'] = 2
         else:
-            p1['z'] = 2.5
+            p1['z'] = 3.5
         p2 = {
             'x': data['points'][int(path[i + 1][:-1])]['x'],
             'y': data['points'][int(path[i + 1][:-1])]['y'],
         }
         if path[i + 1][-1] == 0:
-            p2['z'] = 1.5
+            p2['z'] = 2
         else:
-            p2['z'] = 2.5
+            p2['z'] = 3.5
         dist += get_distance(p1['x'], p1['y'], p1['z'], p2['x'], p2['y'], p2['z'])
     return dist
 
@@ -272,12 +272,12 @@ def get_busy_points(request):
                 if copter.last_point != -1:
                     n = int(copter.path[0][:-1])
                     nav_point = file_data['points'][n]
-                    nav_point['z'] = 1.5
+                    nav_point['z'] = 2
 
                     if copter.path[0][-1:] == '0':
-                        nav_point['z'] = 1.5
+                        nav_point['z'] = 2
                     elif copter.path[0][-1:] == '1':
-                        nav_point['z'] = 2.5
+                        nav_point['z'] = 3.5
                     dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], copter.x, copter.y, copter.z)
                     if dist > threshold:
                         arr.append(int(copter.last_point[:-1]))

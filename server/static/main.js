@@ -131,7 +131,7 @@ function force_land() {
             command: 'force_land',
             x: curr_telemetry[i].pose.x,
             y: curr_telemetry[i].pose.y,
-            z: 1.5
+            z: 2
         };
         request.open('GET', '/send?' + Object.entries(send_data).map(e => e.join('=')).join('&'), true);
         request.send(null);
