@@ -4,20 +4,20 @@ from django.http import JsonResponse
 from huex.copter import Clever, get_distance, threshold
 import random
 from json import load, dump
-from huex.graphs import build_path, renew, printttt
+from huex.graphs import build_path, renew
 import logging
+import consts as c
 
-allowed_ips = ['127.0.0.1', '192.168.1.206', '192.168.1.123', '192.168.1.168', '192.168.1.149', '192.168.1.65']
 copters = []
 nearest_copter_threshold = 0.3
 
 
-# logging.disable(logging.CRITICAL)
+logging.disable(logging.CRITICAL)
 
 
 def main(request):
     data = dict()
-    if get_client_ip(request) in allowed_ips:
+    if get_client_ip(request) in c.allowed_ips:
         return render(request, "main.html", data)
     else:
         return redirect('/m')
@@ -181,17 +181,17 @@ def calc_path(path):
             'y': data['points'][int(path[i][:-1])]['y'],
         }
         if path[i][-1] == 0:
-            p1['z'] = 2
+            p1['z'] = c.first_layer_height
         else:
-            p1['z'] = 3.5
+            p1['z'] = c.second_layer_height
         p2 = {
             'x': data['points'][int(path[i + 1][:-1])]['x'],
             'y': data['points'][int(path[i + 1][:-1])]['y'],
         }
         if path[i + 1][-1] == 0:
-            p2['z'] = 2
+            p2['z'] = c.first_layer_height
         else:
-            p2['z'] = 3.5
+            p2['z'] = c.second_layer_height
         dist += get_distance(p1['x'], p1['y'], p1['z'], p2['x'], p2['y'], p2['z'])
     return dist
 
@@ -272,12 +272,12 @@ def get_busy_points(request):
                 if copter.last_point != -1:
                     n = int(copter.path[0][:-1])
                     nav_point = file_data['points'][n]
-                    nav_point['z'] = 2
+                    nav_point['z'] = c.first_layer_height
 
                     if copter.path[0][-1:] == '0':
-                        nav_point['z'] = 2
+                        nav_point['z'] = c.first_layer_height
                     elif copter.path[0][-1:] == '1':
-                        nav_point['z'] = 3.5
+                        nav_point['z'] = c.second_layer_height
                     dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], copter.x, copter.y, copter.z)
                     if dist > threshold:
                         arr.append(int(copter.last_point[:-1]))

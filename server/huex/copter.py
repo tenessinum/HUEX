@@ -1,6 +1,7 @@
 import random
 from json import load
 from math import atan2, pi
+import consts as c
 
 threshold = 0.2  # meters
 dangerous_threshold = 0.3
@@ -74,7 +75,7 @@ class Clever:
                 "led": self.led,
                 "status": self.status,
                 "pose": {
-                    "x": self.x, "y": self.y, "z": 2,
+                    "x": self.x, "y": self.y, "z": c.first_layer_height,
                     "yaw": self.yaw
                 }
             }
@@ -90,18 +91,18 @@ class Clever:
                         "led": self.led,
                         "status": self.status,
                         "pose": {
-                            "x": self.x, "y": self.y, "z": 2,
+                            "x": self.x, "y": self.y, "z": c.first_layer_height,
                             "yaw": self.yaw
                         }
                     }
                 n = int(self.path[0][:-1])
                 nav_point = file_data['points'][n]
-                nav_point['z'] = 2
+                nav_point['z'] = c.first_layer_height
 
                 if self.path[0][-1:] == '0':
-                    nav_point['z'] = 2
+                    nav_point['z'] = c.first_layer_height
                 elif self.path[0][-1:] == '1':
-                    nav_point['z'] = 3.5
+                    nav_point['z'] = c.second_layer_height
                 dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], self.x, self.y, self.z)
                 collisions = check_collisions(self, copters)
                 if not collisions:
@@ -147,12 +148,12 @@ def check_collisions(c, copters):
                     if copter.last_point != -1:
                         n = int(copter.path[0][:-1])
                         nav_point = file_data['points'][n]
-                        nav_point['z'] = 2
+                        nav_point['z'] = c.first_layer_height
 
                         if copter.path[0][-1:] == '0':
-                            nav_point['z'] = 2
+                            nav_point['z'] = c.first_layer_height
                         elif copter.path[0][-1:] == '1':
-                            nav_point['z'] = 3.5
+                            nav_point['z'] = c.second_layer_height
                         dist = get_distance(nav_point['x'], nav_point['y'], nav_point['z'], copter.x, copter.y,
                                             copter.z)
                         if dist > threshold:
@@ -192,12 +193,12 @@ def get_d_to_point(c, p):
 
         n = int(p[:-1])
         nav_point = file_data['points'][n]
-        nav_point['z'] = 2
+        nav_point['z'] = c.first_layer_height
 
         if p[-1:] == '0':
-            nav_point['z'] = 2
+            nav_point['z'] = c.first_layer_height
         elif p[-1:] == '1':
-            nav_point['z'] = 3.5
+            nav_point['z'] = c.second_layer_height
 
         return get_distance(nav_point['x'], nav_point['y'], nav_point['z'], c.x, c.y, c.z)
 
