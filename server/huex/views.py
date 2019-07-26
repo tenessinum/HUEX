@@ -9,7 +9,7 @@ import logging
 import consts as c
 
 copters = []
-nearest_copter_threshold = 0.3
+nearest_copter_threshold = c.nearest_copter_threshold
 
 
 logging.disable(logging.CRITICAL)
