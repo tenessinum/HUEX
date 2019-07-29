@@ -7,7 +7,8 @@ from OpenGL.GLU import *
 
 ECHELON_HEIGHT = 1.5
 ECHELON_HEIGHT_2 = 2.5
-COPTER_IP = "192.168.1.103"
+
+#COPTER_IP = "192.168.1.103"
 
 
 class Camera():
@@ -32,7 +33,6 @@ class Camera():
         self.p = pose['pitch'] * 56 + 180
         self.yw = pose['roll'] * 56 + 180
         self.r = -pose['yaw'] * 56 - 90
-        print("r: " + str(self.r), self.yw, sep=" || yw: ")
         self.goto(self.x, self.y, self.z, self.p, self.r, self.yw)
 
     def update(self):
