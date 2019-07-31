@@ -1,9 +1,10 @@
 [Unit]
 Description=Taxi ROS package
-Requires=roscore.service
-After=roscore.service
+Requires=clever.service
+After=clever.service
 
 [Service]
+User=pi
 EnvironmentFile=/lib/systemd/system/roscore.env
 ExecStart=/usr/bin/python /home/pi/clever/main.py
 Restart=on-failure
@@ -11,4 +12,3 @@ RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
-

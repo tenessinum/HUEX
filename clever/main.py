@@ -15,10 +15,10 @@ def get_distance(x1, y1, z1, x2, y2, z2):
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 
-SPEED = 0.8
+SPEED = 0.5
 land_voltage = 3.5
 
-PARAMS_NAME = ('x', 'y', 'z', 'yaw', 'mode', 'cell_voltage')
+PARAMS_NAME = ('x', 'y', 'z', 'yaw', 'mode', 'cell_voltage', 'armed')
 
 pub = rospy.Publisher('ledtopic', LedModeColor, queue_size=10)
 rospy.init_node('flight')
@@ -63,7 +63,7 @@ def send_telemetry(frame_id='aruco_map'):
 
 
 
-def take_off(z=1.5, speed=SPEED):
+def take_off(z=1.5, speed=0.8):
     global last_pose
     print('Taking off')
     navigate(x=0, y=0, z=z, speed=speed, frame_id='body', auto_arm=True)
@@ -183,6 +183,7 @@ def to_led(r,g,b,mode):
     pub.publish(message)
 
 
+rospy.sleep(10)
 map_down()
 
 while not rospy.is_shutdown():

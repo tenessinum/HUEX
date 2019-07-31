@@ -70,7 +70,16 @@ pip install -r requirements.txt
 
 Для запуска основного скрипта воспользуйтсь нашим systemd-сервисом.
 
-// TODO сделать нормальный сервис и мануал, как его использовать
+```bash
+sudo systemctl enable /home/pi/HUEX/clever/setup/taxi.service
+sudo systemctl start taxi.service
+```
+
+Скрипт будет запускаться автоматически при старте системы.
+Для остановки можно воспользоваться командой
+```bash
+sudo systemctl stop taxi.service
+```
 
 ## Веб-интерфейс центра управления полётами
 <img src="media/cup.PNG" alt=""/>
