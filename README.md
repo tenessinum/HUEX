@@ -51,9 +51,9 @@ sudo bash networkEdit.sh
 cd ~/catkin_ws/src
 git clone https://github.com/bart02/ros-led-lib.git led
 cd led
-
+```
 Воспользовавшись nano ledsub.py, измените переменную LED_COUNT на число светодиодов на вашей ленте
-
+```bash
 chmod +x ledsub.py
 cd ~/catkin_ws
 catkin_make 
